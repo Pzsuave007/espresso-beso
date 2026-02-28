@@ -1,0 +1,136 @@
+{
+  "identity": {
+    "persona": "E1: The Anti-AI Designer",
+    "mission": "Create a 'Barista Luxury' mobile web experience that feels like a boutique coffee shop in your pocket.",
+    "core_principles": [
+      "Fusion: Digital Convenience x Old World Cafe Aesthetics",
+      "Emotion: Warmth, Intimacy, Craving",
+      "Content: Coffee is the hero. Use close-ups and rich textures.",
+      "Negative Space: Generous cream-colored breathing room."
+    ]
+  },
+  "design_system": {
+    "colors": {
+      "palette": {
+        "cream_base": "#F5F0E1",
+        "gold_accent": "#8B6914",
+        "gold_light": "#A67C00",
+        "burgundy_pop": "#8B1A1A",
+        "espresso_black": "#1A1A1A",
+        "text_primary": "#0A0A0A",
+        "text_secondary": "#5C4D3C",
+        "white": "#FFFFFF"
+      },
+      "usage": {
+        "background": "bg-[#F5F0E1]",
+        "card_background": "bg-white",
+        "text_main": "text-[#0A0A0A]",
+        "text_muted": "text-[#5C4D3C]",
+        "primary_cta": "bg-[#8B1A1A] text-white hover:bg-[#701515]",
+        "secondary_cta": "bg-transparent border-2 border-[#8B6914] text-[#8B6914] hover:bg-[#8B6914] hover:text-white",
+        "accent_icon": "text-[#8B6914]",
+        "border_subtle": "border-[#E6DCC3]",
+        "border_strong": "border-[#8B6914]"
+      },
+      "dark_mode_strategy": "The 'Night Roast' Mode. Background becomes Deep Espresso (#1A120B), Text becomes Cream (#F5F0E1), Accents remain Gold."
+    },
+    "typography": {
+      "headings": {
+        "font_family": "Playfair Display, serif",
+        "weights": ["600", "700"],
+        "usage": "Use for Page Titles, Product Names, and 'Espresso Beso' branding. Tracking-tight.",
+        "tailwind_class": "font-serif tracking-tight"
+      },
+      "body": {
+        "font_family": "Manrope, sans-serif",
+        "weights": ["400", "500", "600"],
+        "usage": "Use for all UI elements, menus, descriptions, and buttons. Excellent legibility.",
+        "tailwind_class": "font-sans"
+      }
+    },
+    "spacing": {
+      "base_scale": 4,
+      "container_padding": "p-6 md:p-8",
+      "section_gap": "gap-8 md:gap-12",
+      "mobile_optimized": "Ensure touch targets are min 44px. Use pb-24 for pages with bottom nav."
+    },
+    "visual_enhancers": {
+      "radius": "rounded-2xl",
+      "shadows": {
+        "card": "shadow-[0_4px_20px_-2px_rgba(139,105,20,0.15)]",
+        "floating": "shadow-[0_8px_30px_-4px_rgba(139,105,20,0.2)]",
+        "text_glow": "drop-shadow-[0_0_15px_rgba(245,240,225,0.5)]"
+      },
+      "textures": {
+        "grain": "Use a subtle SVG noise overlay on the Cream background to simulate high-quality paper.",
+        "glass": "backdrop-blur-md bg-[#F5F0E1]/80 border border-white/20"
+      }
+    }
+  },
+  "layout_strategies": {
+    "mobile_first": {
+      "navigation": "Sticky Bottom Navigation Bar (Home, Menu, Order, Profile).",
+      "header": "Minimal sticky header with Logo (Left) and Cart (Right).",
+      "cards": "Full width on mobile with p-4 internal padding."
+    },
+    "bento_grid": {
+      "mode": "MODE A: TETRIS",
+      "usage": "Menu Categories and 'About Us' section.",
+      "rules": "Mix tall product shots with square category tiles."
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "rounded-full px-8 py-3 font-semibold transition-transform active:scale-95 shadow-lg",
+      "secondary": "rounded-full px-6 py-2 font-medium transition-colors"
+    },
+    "cards": {
+      "product": "bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group relative",
+      "zone_selector": "bg-white/50 border border-[#8B6914]/20 rounded-xl p-4 flex items-center gap-3 active:bg-[#8B6914]/10 transition-colors"
+    },
+    "inputs": {
+      "style": "bg-white border-none shadow-inner rounded-lg p-3 focus:ring-2 focus:ring-[#8B6914]"
+    },
+    "map": {
+      "library": "react-leaflet",
+      "style": "Custom marker icons (Coffee Cup). Map tiles should be 'Alidade Smooth' or similar muted style to match the cream theme."
+    }
+  },
+  "assets": {
+    "logo_urls": [
+      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/o7e1ny9i_Drink-Card---Espresso-Beso.jpg",
+      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/4n8y1acc_steaker%20design.png",
+      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/6pj83r1s_Facebook-Add-Image---Espresso-Beso2.png",
+      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/p9fi7093_Facebook-Add-Image---Espresso-Beso3.png",
+      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/5ese8u3r_Facebook-Add-Image---Espresso-Beso4.png"
+    ],
+    "stock_images": {
+      "hero_latte": "https://images.unsplash.com/photo-1559001724-fbad036dbc9e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwxfHxlc3ByZXNzbyUyMGxhdHRlJTIwYXJ0JTIwY2xvc2UlMjB1cHxlbnwwfHx8fDE3NzIyMzc1Mjd8MA&ixlib=rb-4.1.0&q=85",
+      "latte_art_heart": "https://images.unsplash.com/photo-1630758769030-e58d72892314?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwyfHxlc3ByZXNzbyUyMGxhdHRlJTIwYXJ0JTIwY2xvc2UlMjB1cHxlbnwwfHx8fDE3NzIyMzc1Mjd8MA&ixlib=rb-4.1.0&q=85",
+      "coffee_beans_texture": "https://images.unsplash.com/photo-1769437031391-25445ec090ab?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHw0fHxyb2FzdGVkJTIwY29mZmVlJTIwYmVhbnMlMjB0ZXh0dXJlfGVufDB8fHx8MTc3MjIzNzU0MXww&ixlib=rb-4.1.0&q=85",
+      "lifestyle_people": "https://images.unsplash.com/photo-1758525223154-c1f7549ff888?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHwyfHxoYXBweSUyMHBlcnNvbiUyMGRyaW5raW5nJTIwY29mZmVlJTIwb3V0ZG9vcnxlbnwwfHx8fDE3NzIyMzc1NDJ8MA&ixlib=rb-4.1.0&q=85",
+      "generic_truck": "https://images.unsplash.com/photo-1715260275693-420d58797369?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHw0fHxjb2ZmZWUlMjB0cnVja3xlbnwwfHx8fDE3NzIyMzc1NDB8MA&ixlib=rb-4.1.0&q=85"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "preferred_icons": ["Coffee", "MapPin", "ShoppingBag", "User", "Menu", "ChevronRight", "Star"]
+    }
+  },
+  "implementation_steps": [
+    "1. Setup Tailwind Theme: Extend colors with 'cream', 'gold', 'burgundy'. Add fonts.",
+    "2. Install Dependencies: npm install leaflet react-leaflet @types/leaflet",
+    "3. Create Layout Wrapper: Implement the 'App Shell' with bottom navigation for mobile.",
+    "4. Build Components: Button, ZoneCard, ProductCard (with customization modal), CartDrawer.",
+    "5. Map Integration: Build the 'LiveLocationMap' component using Leaflet.",
+    "6. Pages: Home (Landing + Zone), Menu (Product List), Cart, Admin Dashboard."
+  ],
+  "universal_guidelines": [
+    "NEVER use default blue links. All interactive elements must be Gold or Burgundy.",
+    "Use 'Sonner' for toasts (Order added, Payment success).",
+    "Ensure the 'Zone Selector' is the first thing users see on mobile (besides the hero).",
+    "Use skeletons for loading states.",
+    "All prices should be formatted as $X.XX",
+    "Admin Dashboard should use the 'High Density' Grid layout but keep the warm theme.",
+    "IMPORTANT: Add 'data-testid' to all interactive elements."
+  ]
+}
