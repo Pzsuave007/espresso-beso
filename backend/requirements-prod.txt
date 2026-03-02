@@ -1,0 +1,38 @@
+# Core FastAPI (Python 3.9 compatible)
+fastapi==0.110.1
+uvicorn==0.25.0
+starlette==0.37.2
+python-multipart==0.0.20
+
+# Database
+motor==3.3.1
+pymongo==4.5.0
+
+# Authentication
+PyJWT==2.8.0
+python-jose==3.3.0
+passlib==1.7.4
+bcrypt==4.1.3
+
+# Validation & Settings
+pydantic==2.5.0
+pydantic_core==2.14.1
+python-dotenv==1.0.0
+email-validator==2.1.0
+
+# PayPal
+paypalrestsdk==1.13.3
+
+# HTTP Client
+httpx==0.26.0
+requests==2.31.0
+
+# Utilities
+python-dateutil==2.8.2
+annotated-types==0.6.0
+
+# Push Notifications
+pywebpush==1.14.0
+
+# Stripe Payments
+stripe==14.4.0

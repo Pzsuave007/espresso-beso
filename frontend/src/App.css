@@ -1,34 +1,171 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* App specific styles */
+.page-container {
+    @apply min-h-screen bg-cream pb-24 md:pb-8;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+.section-title {
+    @apply font-serif text-2xl md:text-3xl font-semibold text-espresso tracking-tight;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+/* Product card styles */
+.product-card {
+    @apply bg-white rounded-2xl overflow-hidden shadow-card transition-all duration-300 hover:shadow-floating;
 }
 
-.App-link {
-    color: #61dafb;
+.product-card-image {
+    @apply w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105;
 }
 
-@keyframes App-logo-spin {
+/* Zone selector styles */
+.zone-card {
+    @apply bg-white/50 border border-gold/20 rounded-xl p-4 flex items-center gap-3 cursor-pointer transition-all duration-200;
+}
+
+.zone-card:hover {
+    @apply bg-gold/10;
+}
+
+.zone-card.active {
+    @apply bg-gold/20 border-gold;
+}
+
+/* Status indicators */
+.status-available {
+    @apply bg-emerald-500;
+}
+
+.status-preparing {
+    @apply bg-amber-500;
+}
+
+.status-traveling {
+    @apply bg-blue-500;
+}
+
+.status-offline {
+    @apply bg-gray-400;
+}
+
+/* Bottom navigation */
+.bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-cream-dark px-4 py-2 z-50;
+}
+
+.bottom-nav-item {
+    @apply flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all duration-200;
+}
+
+.bottom-nav-item.active {
+    @apply bg-gold/10 text-gold;
+}
+
+.bottom-nav-item:not(.active) {
+    @apply text-espresso/60 hover:text-espresso;
+}
+
+/* Header styles */
+.header {
+    @apply sticky top-0 bg-cream/95 backdrop-blur-md border-b border-cream-dark z-40 px-4 py-3;
+}
+
+/* Cart drawer */
+.cart-item {
+    @apply flex gap-4 p-4 border-b border-cream-dark last:border-0;
+}
+
+/* Form styles */
+.form-input {
+    @apply w-full bg-white border-none shadow-inner rounded-lg p-3 focus:ring-2 focus:ring-gold transition-all;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-espresso/80 mb-1;
+}
+
+/* Loading skeleton */
+.skeleton {
+    @apply animate-pulse bg-cream-dark rounded;
+}
+
+/* Toast customization */
+[data-sonner-toast] {
+    --normal-bg: #F5F0E1;
+    --normal-border: #E6DCC3;
+    --normal-text: #1A1A1A;
+    --success-bg: #F5F0E1;
+    --success-border: #8B6914;
+    --success-text: #1A1A1A;
+}
+
+/* Map custom marker */
+.coffee-marker {
+    @apply w-10 h-10 bg-burgundy rounded-full flex items-center justify-center text-white shadow-floating;
+}
+
+/* Admin dashboard styles */
+.admin-card {
+    @apply bg-white rounded-2xl p-6 shadow-card;
+}
+
+.admin-stat {
+    @apply text-3xl font-serif font-bold text-espresso;
+}
+
+.admin-stat-label {
+    @apply text-sm text-espresso/60 font-medium;
+}
+
+/* Order ticket style */
+.order-ticket {
+    @apply bg-white rounded-2xl overflow-hidden shadow-card border-l-4 border-gold;
+}
+
+.order-ticket-header {
+    @apply bg-cream px-4 py-3 border-b border-cream-dark;
+}
+
+/* Customization options */
+.customization-option {
+    @apply px-4 py-2 rounded-full border border-cream-dark cursor-pointer transition-all duration-200;
+}
+
+.customization-option.selected {
+    @apply bg-gold text-white border-gold;
+}
+
+.customization-option:not(.selected):hover {
+    @apply bg-cream-dark;
+}
+
+/* Mobile menu animation */
+@keyframes slideIn {
     from {
-        transform: rotate(0deg);
+        transform: translateX(100%);
     }
     to {
-        transform: rotate(360deg);
+        transform: translateX(0);
     }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Quantity selector */
+.qty-btn {
+    @apply w-10 h-10 rounded-full bg-cream flex items-center justify-center text-espresso transition-all duration-200 hover:bg-gold hover:text-white;
+}
+
+/* Price highlight */
+.price-tag {
+    @apply font-serif text-xl font-semibold text-burgundy;
+}
+
+/* Badge styles */
+.badge-gold {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gold/10 text-gold;
+}
+
+.badge-burgundy {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-burgundy/10 text-burgundy;
 }
