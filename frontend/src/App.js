@@ -56,6 +56,17 @@ export const useZone = () => {
   return context;
 };
 
+// Shop Status Context
+export const ShopStatusContext = createContext();
+
+export const useShopStatus = () => {
+  const context = useContext(ShopStatusContext);
+  if (!context) {
+    throw new Error('useShopStatus must be used within a ShopStatusProvider');
+  }
+  return context;
+};
+
 function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
