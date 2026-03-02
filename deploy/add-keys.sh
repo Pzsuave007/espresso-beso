@@ -13,7 +13,7 @@
 # 4. Delete the keys.txt file from File Manager
 #############################################
 
-KEYS_FILE="/home/espresso/public_html/keys.txt"
+KEYS_FILE="/home/espressouni2/public_html/keys.txt"
 ENV_FILE="/opt/espresso-beso/backend/.env"
 
 echo "=== Adding API Keys ==="
