@@ -1261,8 +1261,25 @@ async def get_van_location():
     location = await db.van_location.find_one({}, {"_id": 0})
     if not location:
         # Return default location (Spokane) with default mode
-        return {"lat": 47.6588, "lng": -117.4260, "status": "offline", "mode": "mobile", "stationary_location_name": None, "current_zone": None}
+        return {"lat": 47.6588, "lng": -117.4260, "status": "offline", "is_online": False, "mode": "mobile", "stationary_location_name": None, "current_zone": None}
     return location
+
+# Simple endpoint to check if ordering is available
+@api_router.get("/shop-status")
+async def get_shop_status():
+    location = await db.van_location.find_one({}, {"_id": 0})
+    is_online = location.get("is_online", False) if location else False
+    status = location.get("status", "offline") if location else "offline"
+    mode = location.get("mode", "mobile") if location else "mobile"
+    stationary_name = location.get("stationary_location_name") if location else None
+    return {
+        "is_online": is_online,
+        "status": status,
+        "mode": mode,
+        "stationary_location_name": stationary_name,
+        "can_order": is_online,
+        "message": "We're open! Order now." if is_online else "We're currently offline. Request a visit!"
+    }
 
 @api_router.post("/van-location")
 async def update_van_location(location_data: VanLocationUpdate, admin: dict = Depends(get_current_admin)):
@@ -1270,6 +1287,7 @@ async def update_van_location(location_data: VanLocationUpdate, admin: dict = De
         lat=location_data.lat,
         lng=location_data.lng,
         status=location_data.status or "available",
+        is_online=location_data.is_online if location_data.is_online is not None else False,
         mode=location_data.mode or "mobile",
         stationary_location_name=location_data.stationary_location_name,
         current_zone=location_data.current_zone,
@@ -1284,6 +1302,20 @@ async def update_van_location(location_data: VanLocationUpdate, admin: dict = De
     # Upsert - update if exists, insert if not
     await db.van_location.update_one({}, {"$set": doc}, upsert=True)
     return location
+
+# Quick toggle for online/offline status
+@api_router.post("/shop-status/toggle")
+async def toggle_shop_status(admin: dict = Depends(get_current_admin)):
+    location = await db.van_location.find_one({}, {"_id": 0})
+    current_online = location.get("is_online", False) if location else False
+    new_online = not current_online
+    
+    await db.van_location.update_one({}, {"$set": {"is_online": new_online}}, upsert=True)
+    
+    return {
+        "is_online": new_online,
+        "message": "Shop is now ONLINE - customers can order!" if new_online else "Shop is now OFFLINE - only visit requests allowed."
+    }
 
 # Endpoint to set van as traveling to a specific order
 @api_router.post("/van-location/traveling-to/{order_id}")
