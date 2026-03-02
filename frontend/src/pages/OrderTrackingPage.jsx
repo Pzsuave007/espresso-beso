@@ -50,24 +50,28 @@ export default function OrderTrackingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [autoRefreshCountdown, setAutoRefreshCountdown] = useState(10);
 
   // Fetch order status
-  const fetchOrderStatus = async (id) => {
+  const fetchOrderStatus = async (id, silent = false) => {
     if (!id) return;
     
-    setLoading(true);
+    if (!silent) setLoading(true);
     setError(null);
     
     try {
       const response = await axios.get(`${API}/orders/track/${id}`);
       setTrackingData(response.data);
       setLastUpdated(new Date());
+      setAutoRefreshCountdown(10);
     } catch (err) {
       console.error('Error fetching order:', err);
-      setError(err.response?.data?.detail || 'Order not found. Please check your order number.');
-      setTrackingData(null);
+      if (!silent) {
+        setError(err.response?.data?.detail || 'Order not found. Please check your order number.');
+        setTrackingData(null);
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -78,16 +82,27 @@ export default function OrderTrackingPage() {
     }
   }, [orderId]);
 
-  // Auto-refresh every 30 seconds for active orders
+  // Auto-refresh every 10 seconds for active orders
   useEffect(() => {
     if (trackingData && !['completed', 'cancelled'].includes(trackingData.status)) {
       const interval = setInterval(() => {
-        fetchOrderStatus(orderId || inputOrderId);
-      }, 30000);
+        fetchOrderStatus(orderId || inputOrderId, true);
+      }, 10000);
       
       return () => clearInterval(interval);
     }
   }, [trackingData, orderId, inputOrderId]);
+
+  // Countdown timer for visual feedback
+  useEffect(() => {
+    if (trackingData && !['completed', 'cancelled'].includes(trackingData.status)) {
+      const countdownInterval = setInterval(() => {
+        setAutoRefreshCountdown(prev => prev > 0 ? prev - 1 : 10);
+      }, 1000);
+      
+      return () => clearInterval(countdownInterval);
+    }
+  }, [trackingData]);
 
   // Handle manual search
   const handleSearch = (e) => {
