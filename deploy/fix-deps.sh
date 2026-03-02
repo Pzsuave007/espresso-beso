@@ -7,9 +7,7 @@
 
 echo "=== Installing missing dependencies ==="
 
-cd /opt/espresso-beso/backend
-
-# Install stripe and other requirements
+# Install to the PRODUCTION venv (not the git repo venv)
 /opt/espresso-beso/backend/venv/bin/pip install stripe pywebpush
 
 echo ""
