@@ -266,19 +266,21 @@ function App() {
   return (
     <AuthContext.Provider value={{ token, admin, login, logout, isAuthenticated: !!token }}>
       <ZoneContext.Provider value={{ zones, setZones, vanLocation, setVanLocation, selectedZone, setSelectedZone, selectedTimeWindow, setSelectedTimeWindow }}>
-        <CartContext.Provider value={{ 
-          cart, 
-          addToCart, 
-          removeFromCart, 
-          updateCartQuantity, 
-          clearCart, 
-          cartTotal, 
-          cartCount 
-        }}>
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </CartContext.Provider>
+        <ShopStatusContext.Provider value={{ shopStatus, setShopStatus }}>
+          <CartContext.Provider value={{ 
+            cart, 
+            addToCart, 
+            removeFromCart, 
+            updateCartQuantity, 
+            clearCart, 
+            cartTotal, 
+            cartCount 
+          }}>
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </CartContext.Provider>
+        </ShopStatusContext.Provider>
       </ZoneContext.Provider>
     </AuthContext.Provider>
   );
