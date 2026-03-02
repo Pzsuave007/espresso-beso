@@ -202,6 +202,7 @@ class VanLocation(BaseModel):
     lat: float
     lng: float
     status: str = "available"  # available, preparing, traveling, offline
+    is_online: bool = False  # Controls if ordering is enabled
     mode: str = "mobile"  # mobile or stationary
     stationary_location_name: Optional[str] = None  # e.g., "Soccer Match at Lincoln Park"
     current_zone: Optional[str] = None
@@ -215,6 +216,7 @@ class VanLocationUpdate(BaseModel):
     lat: float
     lng: float
     status: Optional[str] = None
+    is_online: Optional[bool] = None  # Controls if ordering is enabled
     mode: Optional[str] = None  # mobile or stationary
     stationary_location_name: Optional[str] = None
     current_zone: Optional[str] = None
