@@ -21,21 +21,41 @@ function DashboardOverview() {
   const [summary, setSummary] = useState(null);
   const [todayOrders, setTodayOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(false);
+  const [toggleLoading, setToggleLoading] = useState(false);
   const { token } = useAuth();
 
   const fetchData = async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      const [summaryRes, ordersRes] = await Promise.all([
+      const [summaryRes, ordersRes, statusRes] = await Promise.all([
         axios.get(`${API}/orders/summary`, { headers }),
-        axios.get(`${API}/orders/today`, { headers })
+        axios.get(`${API}/orders/today`, { headers }),
+        axios.get(`${API}/shop-status`)
       ]);
       setSummary(summaryRes.data);
       setTodayOrders(ordersRes.data);
+      setIsOnline(statusRes.data.is_online);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleOnlineStatus = async () => {
+    setToggleLoading(true);
+    try {
+      const res = await axios.post(`${API}/shop-status/toggle`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsOnline(res.data.is_online);
+      toast.success(res.data.message);
+    } catch (error) {
+      console.error('Error toggling status:', error);
+      toast.error('Failed to toggle status');
+    } finally {
+      setToggleLoading(false);
     }
   };
 
@@ -55,6 +75,45 @@ function DashboardOverview() {
 
   return (
     <div className="space-y-6" data-testid="admin-dashboard-overview">
+      {/* Online/Offline Toggle - Most Important */}
+      <div className={`rounded-2xl p-6 ${isOnline ? 'bg-green-500' : 'bg-gray-500'} text-white transition-colors duration-300`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className={`w-16 h-16 rounded-full ${isOnline ? 'bg-green-400' : 'bg-gray-400'} flex items-center justify-center`}>
+              {isOnline ? (
+                <Coffee className="w-8 h-8 text-white" />
+              ) : (
+                <Clock className="w-8 h-8 text-white" />
+              )}
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">
+                {isOnline ? "You're ONLINE" : "You're OFFLINE"}
+              </h2>
+              <p className="text-white/80">
+                {isOnline 
+                  ? "Customers can place orders now" 
+                  : "Customers can only request visits"}
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={toggleOnlineStatus}
+            disabled={toggleLoading}
+            className={`${isOnline 
+              ? 'bg-white text-green-600 hover:bg-green-50' 
+              : 'bg-white text-gray-600 hover:bg-gray-50'
+            } font-bold px-6 py-3 rounded-full`}
+          >
+            {toggleLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              isOnline ? 'Go Offline' : 'Go Online'
+            )}
+          </Button>
+        </div>
+      </div>
+
       <div className="flex justify-between items-center">
         <h1 className="section-title">Dashboard</h1>
         <Button onClick={fetchData} variant="outline" className="gap-2">
