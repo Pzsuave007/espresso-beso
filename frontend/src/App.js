@@ -7,6 +7,7 @@ import { Toaster, toast } from "sonner";
 // Pages
 import HomePage from "./pages/HomePage";
 import MenuPage from "./pages/MenuPage";
+import CustomizePage from "./pages/CustomizePage";
 import CartPage from "./pages/CartPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import GroupRequestPage from "./pages/GroupRequestPage";
