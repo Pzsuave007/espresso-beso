@@ -274,17 +274,44 @@ export default function OrderTrackingPage() {
             {/* Order Items */}
             <div className="bg-white rounded-2xl shadow-card p-6">
               <h3 className="font-semibold text-espresso mb-4">Your Order</h3>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {trackingData.items?.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b border-cream last:border-0">
-                    <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 bg-gold/10 rounded-full flex items-center justify-center text-gold font-bold text-sm">
-                        {item.qty}
-                      </span>
-                      <span className="text-espresso">{item.name}</span>
+                  <div key={idx} className="py-3 border-b border-cream last:border-0">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-start gap-3">
+                        <span className="w-8 h-8 bg-gold/10 rounded-full flex items-center justify-center text-gold font-bold text-sm flex-shrink-0 mt-1">
+                          {item.qty}
+                        </span>
+                        <div>
+                          <span className="text-espresso font-medium">{item.name}</span>
+                          {/* Show customizations */}
+                          {item.customizations && Object.keys(item.customizations).length > 0 && (
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {Object.entries(item.customizations).map(([key, value]) => (
+                                <span 
+                                  key={key} 
+                                  className="text-xs bg-cream px-2 py-1 rounded-full text-espresso/70"
+                                >
+                                  {value}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {item.unit_price && (
+                        <span className="text-espresso/70 text-sm">
+                          ${(item.unit_price * item.qty).toFixed(2)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
+              </div>
+              {/* Order Total */}
+              <div className="mt-4 pt-4 border-t border-cream flex justify-between items-center">
+                <span className="font-medium text-espresso">Total</span>
+                <span className="font-bold text-gold text-lg">${trackingData.total?.toFixed(2)}</span>
               </div>
             </div>
 
