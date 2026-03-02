@@ -782,7 +782,14 @@ async def track_order(order_id: str):
         "message": message,
         "van_status": van_loc.get('status', 'unknown'),
         "van_coming_to_me": is_van_coming_to_me,
-        "items": [{"name": i.get('menu_item_name'), "qty": i.get('quantity')} for i in order_in_queue.get('items', [])]
+        "items": [
+            {
+                "name": i.get('menu_item_name'), 
+                "qty": i.get('quantity'),
+                "customizations": i.get('customizations', {}),
+                "unit_price": i.get('unit_price')
+            } for i in order_in_queue.get('items', [])
+        ]
     }
 
 # Get archived (completed) orders for history/reports
