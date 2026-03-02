@@ -69,6 +69,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/customize/:productId" element={<CustomizePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
           <Route path="/track" element={<OrderTrackingPage />} />
