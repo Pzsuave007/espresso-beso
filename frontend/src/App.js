@@ -151,6 +151,15 @@ function App() {
   // Zone state
   const [zones, setZones] = useState([]);
   const [vanLocation, setVanLocation] = useState(null);
+  
+  // Shop status state
+  const [shopStatus, setShopStatus] = useState({
+    is_online: false,
+    status: 'offline',
+    mode: 'mobile',
+    can_order: false,
+    message: 'Loading...'
+  });
 
   // Load initial data
   useEffect(() => {
@@ -166,12 +175,30 @@ function App() {
         // Load van location
         const locationRes = await axios.get(`${API}/van-location`);
         setVanLocation(locationRes.data);
+        
+        // Load shop status
+        const statusRes = await axios.get(`${API}/shop-status`);
+        setShopStatus(statusRes.data);
       } catch (e) {
         console.error('Error initializing data:', e);
       }
     };
     
     initializeData();
+  }, []);
+
+  // Refresh shop status periodically
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const statusRes = await axios.get(`${API}/shop-status`);
+        setShopStatus(statusRes.data);
+      } catch (e) {
+        console.error('Error refreshing shop status:', e);
+      }
+    }, 30000); // Every 30 seconds
+    
+    return () => clearInterval(interval);
   }, []);
 
   // Cart functions
