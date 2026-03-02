@@ -5,15 +5,20 @@
 # Run: sudo ./deploy/fix-deps.sh
 #############################################
 
-echo "=== Installing missing dependencies ==="
+echo "=== Copying latest code to production ==="
+cp -r /root/espresso-beso/backend/* /opt/espresso-beso/backend/
+cp -r /root/espresso-beso/frontend/* /opt/espresso-beso/frontend/
 
-# Install to the PRODUCTION venv (not the git repo venv)
-/opt/espresso-beso/backend/venv/bin/pip install stripe pywebpush
+echo "=== Installing missing dependencies ==="
+cd /opt/espresso-beso/backend
+source venv/bin/activate
+pip install stripe pywebpush
+deactivate
 
 echo ""
 echo "=== Restarting backend ==="
 systemctl restart espresso-backend
-sleep 2
+sleep 3
 
 if systemctl is-active --quiet espresso-backend; then
     echo "✓ Backend is running!"
