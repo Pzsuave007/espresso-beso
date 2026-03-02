@@ -4,14 +4,16 @@
 # Add API Keys to Espresso Beso
 # 
 # INSTRUCTIONS:
-# 1. Create a file called "my_keys.txt" in /root/espresso-beso/
+# 1. Using cPanel File Manager, create a file called "keys.txt" 
+#    in /home/espresso/public_html/
 # 2. Paste your keys in this format (one per line):
 #    STRIPE_SECRET_KEY=sk_live_xxxxx
 #    STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
 # 3. Run this script: sudo ./deploy/add-keys.sh
+# 4. Delete the keys.txt file from File Manager
 #############################################
 
-KEYS_FILE="/root/espresso-beso/my_keys.txt"
+KEYS_FILE="/home/espresso/public_html/keys.txt"
 ENV_FILE="/opt/espresso-beso/backend/.env"
 
 echo "=== Adding API Keys ==="
