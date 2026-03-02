@@ -288,26 +288,38 @@ export default function OrderTrackingPage() {
               </div>
             </div>
 
-            {/* Refresh Button */}
+            {/* Auto-Refresh Indicator */}
             {!['completed', 'cancelled'].includes(trackingData.status) && (
-              <div className="text-center">
-                <Button
-                  variant="outline"
-                  onClick={() => fetchOrderStatus(orderId || inputOrderId)}
-                  disabled={loading}
-                  className="gap-2"
-                >
-                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                  Refresh Status
-                </Button>
-                {lastUpdated && (
-                  <p className="text-xs text-espresso/50 mt-2">
-                    Last updated: {lastUpdated.toLocaleTimeString()}
-                  </p>
-                )}
-                <p className="text-xs text-espresso/40 mt-1">
-                  Auto-refreshes every 30 seconds
-                </p>
+              <div className="bg-white rounded-2xl shadow-card p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-full border-4 border-cream flex items-center justify-center">
+                        <span className="text-sm font-bold text-gold">{autoRefreshCountdown}</span>
+                      </div>
+                      <div 
+                        className="absolute inset-0 rounded-full border-4 border-gold border-t-transparent animate-spin"
+                        style={{ animationDuration: '10s', animationTimingFunction: 'linear' }}
+                      ></div>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-espresso">Auto-updating</p>
+                      <p className="text-xs text-espresso/50">
+                        {lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : 'Watching for changes...'}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchOrderStatus(orderId || inputOrderId)}
+                    disabled={loading}
+                    className="gap-2"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </Button>
+                </div>
               </div>
             )}
 
