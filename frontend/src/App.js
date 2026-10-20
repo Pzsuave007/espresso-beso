@@ -11,6 +11,8 @@ import CustomizePage from "./pages/CustomizePage";
 import CartPage from "./pages/CartPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import GroupRequestPage from "./pages/GroupRequestPage";
+import EventsPage from "./pages/EventsPage";
+import BookEventPage from "./pages/BookEventPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import TrackerPage from "./pages/TrackerPage";
@@ -86,6 +88,8 @@ function AppContent() {
           <Route path="/track" element={<OrderTrackingPage />} />
           <Route path="/track/:orderId" element={<OrderTrackingPage />} />
           <Route path="/order/:orderId" element={<OrderTrackingPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/book-event" element={<BookEventPage />} />
           <Route path="/group-request" element={<GroupRequestPage />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/*" element={<AdminDashboard />} />

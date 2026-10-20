@@ -270,13 +270,16 @@ def get_customer_confirmation_html(order: dict) -> str:
 
 def get_group_request_notification_html(request: dict) -> str:
     """HTML template for owner notification of new group/event request"""
+    event_type = request.get('event_type', 'other').replace('_', ' ').title()
+    package_size = request.get('package_size', 'small').title()
+    
     return f"""
     <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif">
         <tr><td style="background:#D4AF37;padding:20px;text-align:center">
-            <h1 style="color:white;margin:0">📅 New Visit Request!</h1>
+            <h1 style="color:white;margin:0">📅 New Event Request!</h1>
         </td></tr>
         <tr><td style="padding:24px;background:#fff">
-            <h2 style="color:#8B4513;margin-top:0">Event/Catering Request</h2>
+            <h2 style="color:#8B4513;margin-top:0">{escape(event_type)} - {escape(package_size)} Package</h2>
             
             <p><strong>Contact Name:</strong> {escape(request.get('contact_name', 'N/A'))}</p>
             <p><strong>Phone:</strong> {escape(request.get('contact_phone', 'N/A'))}</p>
@@ -284,7 +287,9 @@ def get_group_request_notification_html(request: dict) -> str:
             <p><strong>Company/Org:</strong> {escape(request.get('company_name', 'N/A'))}</p>
             
             <div style="background:#FFF8DC;padding:16px;border-radius:8px;margin:20px 0">
-                <p style="margin:0"><strong>Location:</strong> {escape(request.get('address', 'N/A'))}</p>
+                <p style="margin:0"><strong>Event Type:</strong> {escape(event_type)}</p>
+                <p style="margin:8px 0 0 0"><strong>Package:</strong> {escape(package_size)}</p>
+                <p style="margin:8px 0 0 0"><strong>Location:</strong> {escape(request.get('address', 'N/A'))}</p>
                 <p style="margin:8px 0 0 0"><strong>Est. People:</strong> {request.get('people_count', 'N/A')}</p>
             </div>
             
@@ -446,6 +451,8 @@ class OrderStatusUpdate(BaseModel):
 
 class GroupRequest(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    event_type: str = "corporate"  # corporate, wedding, graduation, sports, birthday, other
+    package_size: str = "small"  # small (10-25), medium (25-50)
     address: str
     people_count: int
     preferred_date: str
@@ -459,6 +466,8 @@ class GroupRequest(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class GroupRequestCreate(BaseModel):
+    event_type: str = "corporate"
+    package_size: str = "small"
     address: str
     people_count: int
     preferred_date: str
@@ -468,6 +477,22 @@ class GroupRequestCreate(BaseModel):
     contact_phone: str
     company_name: Optional[str] = None
     notes: Optional[str] = None
+
+# Event Settings Model
+class EventSettings(BaseModel):
+    event_types: Dict[str, bool] = {
+        "corporate": True,
+        "wedding": True,
+        "graduation": True,
+        "sports": True,
+        "birthday": True,
+        "community": True,
+        "other": True
+    }
+    packages: Dict[str, Dict[str, Any]] = {
+        "small": {"name": "Small Event", "people": "10-25", "price": 150, "enabled": True},
+        "medium": {"name": "Medium Event", "people": "25-50", "price": 275, "enabled": True}
+    }
 
 class VanLocation(BaseModel):
     lat: float
@@ -1527,6 +1552,37 @@ async def test_push_notification(admin: dict = Depends(get_current_admin)):
     return {"message": "Test notification sent"}
 
 # ===================== GROUP REQUEST ENDPOINTS =====================
+
+# Default event settings
+DEFAULT_EVENT_SETTINGS = {
+    "event_types": {
+        "corporate": {"enabled": True, "name": "Corporate Events", "icon": "briefcase", "description": "Office meetings, team building, company celebrations"},
+        "wedding": {"enabled": True, "name": "Weddings", "icon": "heart", "description": "Bridal showers, rehearsal dinners, wedding receptions"},
+        "graduation": {"enabled": True, "name": "Graduations", "icon": "graduation-cap", "description": "Graduation parties and celebrations"},
+        "sports": {"enabled": True, "name": "Sports Events", "icon": "trophy", "description": "Soccer games, tournaments, team events"},
+        "birthday": {"enabled": True, "name": "Birthday Parties", "icon": "cake", "description": "Birthday celebrations for all ages"},
+        "community": {"enabled": True, "name": "Community Events", "icon": "users", "description": "Neighborhood gatherings, fundraisers, festivals"},
+        "other": {"enabled": True, "name": "Other Events", "icon": "calendar", "description": "Any special occasion"}
+    },
+    "packages": {
+        "small": {"name": "Small Gathering", "people_range": "10-25", "price": 150, "enabled": True, "description": "Perfect for small office meetings or intimate celebrations"},
+        "medium": {"name": "Medium Event", "people_range": "25-50", "price": 275, "enabled": True, "description": "Ideal for larger corporate events or parties"}
+    }
+}
+
+@api_router.get("/event-settings")
+async def get_event_settings():
+    """Get event settings (public endpoint for frontend)"""
+    settings = await db.event_settings.find_one({}, {"_id": 0})
+    if not settings:
+        return DEFAULT_EVENT_SETTINGS
+    return settings
+
+@api_router.put("/event-settings")
+async def update_event_settings(settings: dict = Body(...), admin: dict = Depends(get_current_admin)):
+    """Update event settings (admin only)"""
+    await db.event_settings.update_one({}, {"$set": settings}, upsert=True)
+    return {"message": "Event settings updated", "settings": settings}
 
 @api_router.post("/group-requests", response_model=GroupRequest)
 async def create_group_request(request_data: GroupRequestCreate):

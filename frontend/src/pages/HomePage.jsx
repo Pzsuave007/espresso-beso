@@ -516,6 +516,78 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Events & Catering Section */}
+      <section className="px-4 md:px-8 py-16 bg-burgundy text-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="inline-block px-4 py-2 bg-gold/20 rounded-full text-gold text-sm font-medium mb-4">
+                Events & Catering
+              </span>
+              <h2 className="font-serif text-3xl md:text-4xl mb-4">
+                Book Us For Your Next Event
+              </h2>
+              <p className="text-white/80 mb-6">
+                From corporate meetings to wedding celebrations, we bring the full espresso bar experience to your special occasion. Premium coffee, professional service, unforgettable moments.
+              </p>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
+                  <span>Corporate Events & Office Meetings</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
+                  <span>Weddings & Private Parties</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
+                  <span>Sports Events & Community Gatherings</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
+                  <span>Graduations & Birthday Celebrations</span>
+                </li>
+              </ul>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link to="/events">
+                  <Button className="bg-gold hover:bg-gold/90 text-espresso rounded-full px-6 py-5 font-semibold">
+                    View Packages
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+                <Link to="/book-event">
+                  <Button variant="outline" className="border-white text-white hover:bg-white/10 rounded-full px-6 py-5">
+                    Get a Quote
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <img 
+                src="https://images.unsplash.com/photo-1559001724-fbad036dbc9e?w=400&h=300&fit=crop"
+                alt="Corporate coffee event"
+                className="rounded-2xl h-48 w-full object-cover"
+              />
+              <img 
+                src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop"
+                alt="Wedding coffee service"
+                className="rounded-2xl h-48 w-full object-cover mt-8"
+              />
+              <img 
+                src="https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&h=300&fit=crop"
+                alt="Coffee catering"
+                className="rounded-2xl h-48 w-full object-cover"
+              />
+              <img 
+                src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=300&fit=crop"
+                alt="Espresso bar setup"
+                className="rounded-2xl h-48 w-full object-cover mt-8"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="px-4 md:px-8 py-16 bg-espresso">
         <div className="max-w-3xl mx-auto text-center">

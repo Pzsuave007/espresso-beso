@@ -39,11 +39,18 @@ export default function Header() {
             Menu
           </Link>
           <Link 
-            to="/group-request" 
+            to="/events" 
             className="text-espresso/80 hover:text-gold transition-colors font-medium"
-            data-testid="nav-group-request"
+            data-testid="nav-events"
           >
-            Group Orders
+            Events
+          </Link>
+          <Link 
+            to="/book-event" 
+            className="text-espresso/80 hover:text-gold transition-colors font-medium"
+            data-testid="nav-book-event"
+          >
+            Book Event
           </Link>
         </nav>
 
@@ -94,12 +101,20 @@ export default function Header() {
                   Menu
                 </Link>
                 <Link 
-                  to="/group-request" 
+                  to="/events" 
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-lg font-medium text-espresso hover:text-gold transition-colors py-2"
-                  data-testid="mobile-nav-group-request"
+                  data-testid="mobile-nav-events"
                 >
-                  Group Orders
+                  Events & Catering
+                </Link>
+                <Link 
+                  to="/book-event" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-lg font-medium text-burgundy hover:text-gold transition-colors py-2 font-semibold"
+                  data-testid="mobile-nav-book-event"
+                >
+                  Book an Event
                 </Link>
                 <Link 
                   to="/cart" 

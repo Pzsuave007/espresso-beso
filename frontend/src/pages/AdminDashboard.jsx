@@ -6,13 +6,14 @@ import {
   LayoutDashboard, Coffee, MapPin, Users, Settings, LogOut, 
   DollarSign, Package, TrendingUp, Clock, ChevronRight, RefreshCw,
   CheckCircle, XCircle, Loader2, Navigation, Power, Calendar, GripVertical, Save,
-  Plus, Pencil, Trash2
+  Plus, Pencil, Trash2, PartyPopper
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Switch } from '../components/ui/switch';
 import { toast } from 'sonner';
+import EventSettingsManager from '../components/EventSettingsManager';
 
 const LOGO_URL = "https://customer-assets.emergentagent.com/job_8eb9ed2b-80c2-447f-a8a6-53bb1c68d925/artifacts/82psuie2_Espresso-Vesso-Logo%20ready1.png";
 
@@ -2599,6 +2600,7 @@ export default function AdminDashboard() {
   const secondaryNavItems = [
     { path: '/admin/history', icon: Clock, label: 'History' },
     { path: '/admin/group-requests', icon: Users, label: 'Requests' },
+    { path: '/admin/events', icon: PartyPopper, label: 'Events' },
   ];
 
   const handleLogout = () => {
@@ -2700,6 +2702,7 @@ export default function AdminDashboard() {
           <Route path="schedule" element={<ScheduleManagement />} />
           <Route path="location" element={<LocationTracker />} />
           <Route path="group-requests" element={<GroupRequestsManagement />} />
+          <Route path="events" element={<EventSettingsManager />} />
           <Route path="*" element={<DashboardOverview />} />
         </Routes>
       </main>
