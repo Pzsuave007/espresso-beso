@@ -5,10 +5,11 @@
 # 
 # INSTRUCTIONS:
 # 1. Using cPanel File Manager, create a file called "keys.txt" 
-#    in /home/espresso/public_html/
+#    in /home/espressouni2/public_html/
 # 2. Paste your keys in this format (one per line):
 #    STRIPE_SECRET_KEY=sk_live_xxxxx
 #    STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
+#    OWNER_EMAIL=your_email@example.com
 # 3. Run this script: sudo ./deploy/add-keys.sh
 # 4. Delete the keys.txt file from File Manager
 #############################################
@@ -28,6 +29,7 @@ if [ ! -f "$KEYS_FILE" ]; then
     echo "---"
     echo "STRIPE_SECRET_KEY=sk_live_your_key_here"
     echo "STRIPE_PUBLISHABLE_KEY=pk_live_your_key_here"
+    echo "OWNER_EMAIL=your_email@example.com"
     echo "---"
     echo ""
     echo "Then run this script again."

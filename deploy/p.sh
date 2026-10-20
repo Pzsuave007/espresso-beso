@@ -11,10 +11,17 @@ cp -r /root/espresso-beso/frontend/* /opt/espresso-beso/frontend/
 echo "=== Fixing frontend config ==="
 echo 'REACT_APP_BACKEND_URL=https://espressobeso.com' > /opt/espresso-beso/frontend/.env
 
+echo "=== Adding email config if not present ==="
+# Add email config to production .env if not already present
+ENV_FILE="/opt/espresso-beso/backend/.env"
+grep -q "EMERGENT_EMAIL_KEY" "$ENV_FILE" || echo 'EMERGENT_EMAIL_KEY=ek_715d0e20930a4d0f3c25c8b48359c769' >> "$ENV_FILE"
+grep -q "EMAIL_FROM_NAME" "$ENV_FILE" || echo 'EMAIL_FROM_NAME=Espresso Beso' >> "$ENV_FILE"
+grep -q "OWNER_EMAIL" "$ENV_FILE" || echo 'OWNER_EMAIL=pzsuave007@gmail.com' >> "$ENV_FILE"
+
 echo "=== Installing backend dependencies ==="
 cd /opt/espresso-beso/backend
 source venv/bin/activate
-pip install stripe pywebpush
+pip install stripe pywebpush httpx
 deactivate
 
 echo "=== Rebuilding frontend ==="

@@ -15,6 +15,12 @@ import bcrypt
 import paypalrestsdk
 import json
 import stripe
+import httpx
+import re
+import ipaddress
+from html import escape
+from html.parser import HTMLParser
+from urllib.parse import urlparse
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -45,8 +51,17 @@ STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY', '')
 stripe.api_key = STRIPE_SECRET_KEY
 
+# Email Configuration (Emergent Managed)
+EMAIL_BASE_URL = "https://integrations.emergentagent.com"
+EMAIL_KEY = os.environ.get("EMERGENT_EMAIL_KEY", "")
+EMAIL_FROM_NAME = os.environ.get("EMAIL_FROM_NAME", "Espresso Beso")
+OWNER_EMAIL = os.environ.get("OWNER_EMAIL", "")
+
 # Create the main app
 app = FastAPI(title="Espresso Beso API")
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 # Create router with /api prefix
 api_router = APIRouter(prefix="/api")
@@ -57,6 +72,262 @@ security = HTTPBearer(auto_error=False)
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# ===================== EMAIL FUNCTIONS =====================
+
+_SHORTENERS = ("bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "goo.gl", "rebrand.ly")
+_CRED_ASK = ("reply with your password", "reply with the code", "send your password", "cvv",
+             "send us your password", "enter your password below", "confirm your card number",
+             "your full card number", "seed phrase", "recovery phrase", "verify your card",
+             "social security number", "confirm your bank details")
+_HOSTISH = re.compile(r"\b(?:https?://)?((?:[a-z0-9-]+\.)+[a-z]{2,})", re.I)
+
+def _host_ok(host: str) -> bool:
+    if not host or "xn--" in host:
+        return False
+    try:
+        ipaddress.ip_address(host)
+        return False
+    except ValueError:
+        pass
+    return not any(host == s or host.endswith("." + s) for s in _SHORTENERS)
+
+def _same_site(shown: str, real: str) -> bool:
+    return shown == real or real.endswith("." + shown) or shown.endswith("." + real)
+
+class _EmailScan(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.tags, self.urls, self.anchors = set(), [], []
+        self._href, self._text = None, []
+    def handle_starttag(self, tag, attrs):
+        self.tags.add(tag.lower())
+        self.urls += [v for k, v in attrs if k.lower() in ("href", "src") and v]
+        if tag.lower() == "a":
+            self._href = dict((k.lower(), v) for k, v in attrs).get("href")
+            self._text = []
+    def handle_data(self, data):
+        if self._href is not None:
+            self._text.append(data)
+    def handle_endtag(self, tag):
+        if tag.lower() == "a" and self._href is not None:
+            self.anchors.append((self._href, "".join(self._text)))
+            self._href, self._text = None, []
+
+def _assert_safe_email(subject: str, html: str) -> None:
+    scan = _EmailScan(); scan.feed(html)
+    if scan.tags & {"form", "input", "textarea", "select"}:
+        raise ValueError("No forms or input fields in email (G2)")
+    body = f"{subject}\n{html}".lower()
+    for p in _CRED_ASK:
+        if p in body:
+            raise ValueError(f"Email asks the recipient for credentials: {p!r} (G2)")
+    for url in scan.urls:
+        low = url.strip().lower()
+        if low.startswith(("mailto:", "tel:", "cid:", "#")):
+            continue
+        if not low.startswith("https://"):
+            raise ValueError(f"Email links/assets must be absolute https: {url!r} (G3)")
+        host = urlparse(low).hostname or ""
+        if not _host_ok(host) or urlparse(low).username is not None:
+            raise ValueError(f"Shortened, numeric-host or credential-bearing URL: {url!r} (G3)")
+    for href, text in scan.anchors:
+        real = urlparse(href.strip().lower()).hostname or ""
+        if not real:
+            continue
+        for m in _HOSTISH.finditer(text):
+            if not _same_site(m.group(1).lower(), real):
+                raise ValueError(f"Anchor text {m.group(1)!r} ≠ real link host {real!r} (G3)")
+
+async def send_email(*, to: str, subject: str, html: str, reply_to: str | None = None) -> str | None:
+    """Send email via Emergent managed email service"""
+    if not EMAIL_KEY:
+        logger.warning("Email not configured - EMERGENT_EMAIL_KEY missing")
+        return None
+    
+    _assert_safe_email(subject, html)
+    payload = {"to": [to], "subject": subject, "html": html, "from_name": EMAIL_FROM_NAME}
+    if reply_to:
+        payload["contact_email"] = reply_to
+    
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            resp = await client.post(
+                f"{EMAIL_BASE_URL}/api/v1/email/send",
+                headers={"X-Email-Key": EMAIL_KEY},
+                json=payload,
+            )
+        resp.raise_for_status()
+        logger.info(f"Email sent successfully to {to}")
+        return resp.json().get("id")
+    except httpx.HTTPStatusError as e:
+        try:
+            code = e.response.json().get("code", "")
+        except ValueError:
+            code = ""
+        if code in ("insufficient_credits", "integration_disabled", "daily_limit_reached"):
+            logger.warning(f"Email paused: {code} ({e.response.status_code})")
+            return None
+        logger.error(f"Email send failed: {e.response.status_code} {e.response.text}")
+        return None
+    except Exception as e:
+        logger.error(f"Email send error: {str(e)}")
+        return None
+
+# Email Templates
+def get_order_notification_html(order: dict) -> str:
+    """HTML template for owner notification of new order"""
+    items_html = ""
+    for item in order.get('items', []):
+        customizations = item.get('customizations', {})
+        custom_str = ", ".join([f"{v}" for k, v in customizations.items()]) if customizations else "Standard"
+        items_html += f"""
+        <tr>
+            <td style="padding:8px;border-bottom:1px solid #eee">{escape(item.get('menu_item_name', 'Item'))}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee">{item.get('quantity', 1)}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee">{escape(custom_str)}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee">${item.get('item_total', 0):.2f}</td>
+        </tr>"""
+    
+    customer = order.get('customer_info', {})
+    return f"""
+    <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif">
+        <tr><td style="background:#8B4513;padding:20px;text-align:center">
+            <h1 style="color:white;margin:0">☕ New Order!</h1>
+        </td></tr>
+        <tr><td style="padding:24px;background:#fff">
+            <h2 style="color:#8B4513;margin-top:0">Order #{escape(order.get('id', '')[:8].upper())}</h2>
+            <p><strong>Customer:</strong> {escape(customer.get('name', 'N/A'))}</p>
+            <p><strong>Phone:</strong> {escape(customer.get('phone', 'N/A'))}</p>
+            <p><strong>Email:</strong> {escape(customer.get('email', 'N/A'))}</p>
+            <p><strong>Type:</strong> {escape(order.get('order_type', 'pickup').title())}</p>
+            <p><strong>Payment:</strong> {escape(order.get('payment_method', 'N/A').title())} - {escape(order.get('payment_status', 'pending').title())}</p>
+            
+            <table width="100%" style="margin:20px 0;border-collapse:collapse">
+                <tr style="background:#f5f5f5">
+                    <th style="padding:10px;text-align:left">Item</th>
+                    <th style="padding:10px;text-align:left">Qty</th>
+                    <th style="padding:10px;text-align:left">Options</th>
+                    <th style="padding:10px;text-align:left">Price</th>
+                </tr>
+                {items_html}
+            </table>
+            
+            <p style="font-size:18px;color:#8B4513"><strong>Total: ${order.get('total', 0):.2f}</strong></p>
+        </td></tr>
+        <tr><td style="padding:16px;background:#f5f5f5;text-align:center;font-size:12px;color:#666">
+            Sent by {escape(EMAIL_FROM_NAME)}
+        </td></tr>
+    </table>"""
+
+def get_customer_confirmation_html(order: dict) -> str:
+    """HTML template for customer order confirmation"""
+    items_html = ""
+    for item in order.get('items', []):
+        customizations = item.get('customizations', {})
+        custom_str = ", ".join([f"{v}" for k, v in customizations.items()]) if customizations else "Standard"
+        items_html += f"""
+        <tr>
+            <td style="padding:8px;border-bottom:1px solid #eee">{escape(item.get('menu_item_name', 'Item'))}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee">{item.get('quantity', 1)}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee">{escape(custom_str)}</td>
+        </tr>"""
+    
+    customer = order.get('customer_info', {})
+    order_id = order.get('id', '')
+    
+    return f"""
+    <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif">
+        <tr><td style="background:#8B4513;padding:20px;text-align:center">
+            <h1 style="color:white;margin:0">☕ Order Confirmed!</h1>
+        </td></tr>
+        <tr><td style="padding:24px;background:#fff">
+            <p style="font-size:18px">Hi {escape(customer.get('name', 'there'))}!</p>
+            <p>Thanks for your order! We're getting your drinks ready.</p>
+            
+            <div style="background:#FFF8DC;padding:16px;border-radius:8px;margin:20px 0">
+                <p style="margin:0"><strong>Order #:</strong> {escape(order_id[:8].upper())}</p>
+                <p style="margin:8px 0 0 0"><strong>Total:</strong> ${order.get('total', 0):.2f}</p>
+            </div>
+            
+            <h3 style="color:#8B4513">Your Order:</h3>
+            <table width="100%" style="border-collapse:collapse">
+                <tr style="background:#f5f5f5">
+                    <th style="padding:10px;text-align:left">Item</th>
+                    <th style="padding:10px;text-align:left">Qty</th>
+                    <th style="padding:10px;text-align:left">Options</th>
+                </tr>
+                {items_html}
+            </table>
+            
+            <p style="margin-top:20px">Track your order at: <strong>espressobeso.com/track/{escape(order_id)}</strong></p>
+        </td></tr>
+        <tr><td style="padding:16px;background:#f5f5f5;text-align:center;font-size:12px;color:#666">
+            {escape(EMAIL_FROM_NAME)} - Mobile Espresso Service<br>
+            We never ask for your password or payment details by email.
+        </td></tr>
+    </table>"""
+
+def get_group_request_notification_html(request: dict) -> str:
+    """HTML template for owner notification of new group/event request"""
+    return f"""
+    <table role="presentation" width="100%" style="max-width:600px;margin:0 auto;font-family:Arial,sans-serif">
+        <tr><td style="background:#D4AF37;padding:20px;text-align:center">
+            <h1 style="color:white;margin:0">📅 New Visit Request!</h1>
+        </td></tr>
+        <tr><td style="padding:24px;background:#fff">
+            <h2 style="color:#8B4513;margin-top:0">Event/Catering Request</h2>
+            
+            <p><strong>Contact Name:</strong> {escape(request.get('contact_name', 'N/A'))}</p>
+            <p><strong>Phone:</strong> {escape(request.get('contact_phone', 'N/A'))}</p>
+            <p><strong>Email:</strong> {escape(request.get('contact_email', 'N/A'))}</p>
+            <p><strong>Company/Org:</strong> {escape(request.get('company_name', 'N/A'))}</p>
+            
+            <div style="background:#FFF8DC;padding:16px;border-radius:8px;margin:20px 0">
+                <p style="margin:0"><strong>Location:</strong> {escape(request.get('address', 'N/A'))}</p>
+                <p style="margin:8px 0 0 0"><strong>Est. People:</strong> {request.get('people_count', 'N/A')}</p>
+            </div>
+            
+            <p><strong>Preferred Date:</strong> {escape(request.get('preferred_date', 'N/A'))}</p>
+            <p><strong>Preferred Time:</strong> {escape(request.get('preferred_time', 'N/A'))}</p>
+            
+            {f'<p><strong>Additional Notes:</strong><br>{escape(request.get("notes", ""))}</p>' if request.get('notes') else ''}
+        </td></tr>
+        <tr><td style="padding:16px;background:#f5f5f5;text-align:center;font-size:12px;color:#666">
+            Sent by {escape(EMAIL_FROM_NAME)}
+        </td></tr>
+    </table>"""
+
+async def send_order_notification(order: dict):
+    """Send email notification to owner when new order is placed"""
+    if not OWNER_EMAIL:
+        logger.warning("Owner email not configured")
+        return
+    
+    subject = f"☕ New Order #{order.get('id', '')[:8].upper()} - ${order.get('total', 0):.2f}"
+    html = get_order_notification_html(order)
+    await send_email(to=OWNER_EMAIL, subject=subject, html=html)
+
+async def send_customer_confirmation(order: dict):
+    """Send order confirmation to customer"""
+    customer_email = order.get('customer_info', {}).get('email')
+    if not customer_email:
+        logger.warning("Customer email not available")
+        return
+    
+    subject = f"Your {EMAIL_FROM_NAME} order is confirmed! ☕"
+    html = get_customer_confirmation_html(order)
+    await send_email(to=customer_email, subject=subject, html=html)
+
+async def send_group_request_notification(request: dict):
+    """Send email notification to owner when new group request is submitted"""
+    if not OWNER_EMAIL:
+        logger.warning("Owner email not configured")
+        return
+    
+    subject = f"📅 New Visit Request from {request.get('contact_name', 'Customer')}"
+    html = get_group_request_notification_html(request)
+    await send_email(to=OWNER_EMAIL, subject=subject, html=html)
 
 # ===================== MODELS =====================
 
@@ -533,6 +804,15 @@ async def create_order(order_data: OrderCreate):
         )
     except Exception as e:
         logger.error(f"Failed to send push notification: {e}")
+    
+    # Send email notifications
+    try:
+        # Notify owner
+        await send_order_notification(doc)
+        # Send confirmation to customer
+        await send_customer_confirmation(doc)
+    except Exception as e:
+        logger.error(f"Failed to send email notification: {e}")
     
     return order
 
@@ -1144,14 +1424,28 @@ async def get_stripe_session_status(session_id: str):
     try:
         session = stripe.checkout.Session.retrieve(session_id)
         
-        # If payment is complete, update order
+        # If payment is complete, update order and send emails
         if session.payment_status == 'paid':
             order_id = session.metadata.get('order_id')
             if order_id:
+                # Check if already processed to avoid duplicate emails
+                existing = await db.orders.find_one({"id": order_id}, {"_id": 0})
+                already_paid = existing and existing.get('payment_status') == 'paid'
+                
                 await db.orders.update_one(
                     {"id": order_id, "payment_status": {"$ne": "paid"}},
                     {"$set": {"payment_status": "paid", "payment_method": "stripe"}}
                 )
+                
+                # Send emails only if this is the first time marking as paid
+                if not already_paid and existing:
+                    existing['payment_status'] = 'paid'
+                    existing['payment_method'] = 'stripe'
+                    try:
+                        await send_order_notification(existing)
+                        await send_customer_confirmation(existing)
+                    except Exception as e:
+                        logger.error(f"Failed to send Stripe payment emails: {e}")
         
         return {
             "status": session.status,
@@ -1240,6 +1534,13 @@ async def create_group_request(request_data: GroupRequestCreate):
     doc = group_request.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     await db.group_requests.insert_one(doc)
+    
+    # Send email notification to owner
+    try:
+        await send_group_request_notification(doc)
+    except Exception as e:
+        logger.error(f"Failed to send group request email notification: {e}")
+    
     return group_request
 
 @api_router.get("/group-requests", response_model=List[GroupRequest])
