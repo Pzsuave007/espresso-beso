@@ -139,7 +139,7 @@ def _assert_safe_email(subject: str, html: str) -> None:
             if not _same_site(m.group(1).lower(), real):
                 raise ValueError(f"Anchor text {m.group(1)!r} ≠ real link host {real!r} (G3)")
 
-async def send_email(*, to: str, subject: str, html: str, reply_to: str | None = None) -> str | None:
+async def send_email(*, to: str, subject: str, html: str, reply_to: Optional[str] = None) -> Optional[str]:
     """Send email via Emergent managed email service"""
     if not EMAIL_KEY:
         logger.warning("Email not configured - EMERGENT_EMAIL_KEY missing")
