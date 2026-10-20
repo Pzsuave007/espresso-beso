@@ -142,82 +142,76 @@ export default function EventsPage() {
 
       {/* Packages Section */}
       <div id="packages" className="py-16 bg-white">
-        <div className="max-w-4xl mx-auto px-4">
+        <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl md:text-4xl text-espresso mb-4">Event Packages</h2>
-            <p className="text-espresso/70 max-w-2xl mx-auto">Simple, transparent pricing for your event</p>
+            <h2 className="font-serif text-3xl md:text-4xl text-espresso mb-4">Our Packages</h2>
+            <p className="text-espresso/70 max-w-2xl mx-auto">Simple, transparent pricing for any occasion</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {!loading && enabledPackages.map(([key, pkg]) => (
               <div 
                 key={key}
-                className={`rounded-3xl p-8 ${key === 'medium' ? 'bg-espresso text-white ring-4 ring-gold' : 'bg-cream'}`}
+                className={`rounded-3xl p-6 ${key === 'small' ? 'bg-espresso text-white ring-4 ring-gold' : 'bg-cream'}`}
               >
-                {key === 'medium' && (
+                {key === 'small' && (
                   <span className="inline-block px-3 py-1 bg-gold text-espresso text-xs font-bold rounded-full mb-4">
                     MOST POPULAR
                   </span>
                 )}
-                <h3 className={`font-serif text-2xl mb-2 ${key === 'medium' ? 'text-white' : 'text-espresso'}`}>
+                <h3 className={`font-serif text-2xl mb-2 ${key === 'small' ? 'text-white' : 'text-espresso'}`}>
                   {pkg.name}
                 </h3>
-                <p className={`text-sm mb-4 ${key === 'medium' ? 'text-white/70' : 'text-espresso/70'}`}>
-                  {pkg.people_range} guests
+                <p className={`text-sm mb-4 ${key === 'small' ? 'text-white/70' : 'text-espresso/70'}`}>
+                  {pkg.people_range}
                 </p>
-                <div className="mb-6">
-                  <span className={`text-4xl font-bold ${key === 'medium' ? 'text-gold' : 'text-gold'}`}>
+                <div className="mb-4">
+                  <span className={`text-4xl font-bold ${key === 'small' ? 'text-gold' : 'text-gold'}`}>
                     ${pkg.price}
                   </span>
-                  <span className={`text-sm ${key === 'medium' ? 'text-white/70' : 'text-espresso/70'}`}>
-                    {' '}starting price
+                  <span className={`text-sm ${key === 'small' ? 'text-white/70' : 'text-espresso/70'}`}>
+                    {pkg.price_type === 'per_drink' ? ' /drink' : ' flat rate'}
                   </span>
                 </div>
-                <p className={`text-sm mb-6 ${key === 'medium' ? 'text-white/80' : 'text-espresso/70'}`}>
+                <p className={`text-sm mb-6 ${key === 'small' ? 'text-white/80' : 'text-espresso/70'}`}>
                   {pkg.description}
                 </p>
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-2 mb-6">
                   <li className="flex items-center gap-2">
-                    <CheckCircle className={`w-5 h-5 ${key === 'medium' ? 'text-gold' : 'text-green-500'}`} />
-                    <span className={key === 'medium' ? 'text-white/90' : 'text-espresso/80'}>
-                      Full espresso bar setup
+                    <CheckCircle className={`w-4 h-4 ${key === 'small' ? 'text-gold' : 'text-green-500'}`} />
+                    <span className={`text-sm ${key === 'small' ? 'text-white/90' : 'text-espresso/80'}`}>
+                      {pkg.duration} service
                     </span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className={`w-5 h-5 ${key === 'medium' ? 'text-gold' : 'text-green-500'}`} />
-                    <span className={key === 'medium' ? 'text-white/90' : 'text-espresso/80'}>
-                      Experienced barista
+                    <CheckCircle className={`w-4 h-4 ${key === 'small' ? 'text-gold' : 'text-green-500'}`} />
+                    <span className={`text-sm ${key === 'small' ? 'text-white/90' : 'text-espresso/80'}`}>
+                      Professional barista
                     </span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <CheckCircle className={`w-5 h-5 ${key === 'medium' ? 'text-gold' : 'text-green-500'}`} />
-                    <span className={key === 'medium' ? 'text-white/90' : 'text-espresso/80'}>
-                      Premium coffee & supplies
-                    </span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className={`w-5 h-5 ${key === 'medium' ? 'text-gold' : 'text-green-500'}`} />
-                    <span className={key === 'medium' ? 'text-white/90' : 'text-espresso/80'}>
-                      {key === 'small' ? '2 hour service' : '3 hour service'}
+                    <CheckCircle className={`w-4 h-4 ${key === 'small' ? 'text-gold' : 'text-green-500'}`} />
+                    <span className={`text-sm ${key === 'small' ? 'text-white/90' : 'text-espresso/80'}`}>
+                      {pkg.price_type === 'flat' ? 'Unlimited drinks' : 'Premium espresso drinks'}
                     </span>
                   </li>
                 </ul>
                 <Link to="/book-event">
                   <Button 
-                    className={`w-full rounded-full py-6 text-lg ${
-                      key === 'medium' 
+                    className={`w-full rounded-full py-5 ${
+                      key === 'small' 
                         ? 'bg-gold hover:bg-gold/90 text-espresso' 
                         : 'bg-burgundy hover:bg-burgundy-dark text-white'
                     }`}
                   >
-                    Book This Package
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    Book Now
+                    <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
               </div>
             ))}
           </div>
           <p className="text-center text-espresso/60 mt-8 text-sm">
-            * Prices may vary based on location and specific requirements. Contact us for a custom quote.
+            * Travel fees may apply for locations outside our service area. Contact us for custom quotes.
           </p>
         </div>
       </div>

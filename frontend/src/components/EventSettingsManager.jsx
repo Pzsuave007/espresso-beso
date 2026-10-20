@@ -158,40 +158,42 @@ export default function EventSettingsManager() {
       <div className="bg-white rounded-2xl shadow-card p-6">
         <h2 className="text-lg font-semibold text-espresso mb-4">Pricing Packages</h2>
         <p className="text-sm text-espresso/60 mb-4">
-          Configure your event packages and pricing
+          Configure your packages and pricing
         </p>
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-4">
           {settings?.packages && Object.entries(settings.packages).map(([key, pkg]) => (
             <div 
               key={key}
-              className={`p-5 rounded-xl border-2 transition-all ${
+              className={`p-4 rounded-xl border-2 transition-all ${
                 pkg.enabled ? 'border-gold bg-gold/5' : 'border-gray-200 bg-gray-50'
               }`}
             >
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h3 className={`font-semibold ${pkg.enabled ? 'text-espresso' : 'text-gray-500'}`}>
+                  <h3 className={`font-semibold text-sm ${pkg.enabled ? 'text-espresso' : 'text-gray-500'}`}>
                     {pkg.name}
                   </h3>
-                  <p className="text-sm text-espresso/60">{pkg.people_range} guests</p>
+                  <p className="text-xs text-espresso/60">{pkg.people_range}</p>
                 </div>
                 <Switch 
                   checked={pkg.enabled}
                   onCheckedChange={() => handleTogglePackage(key)}
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-gold" />
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-4 h-4 text-gold" />
                 <Input
                   type="number"
                   value={pkg.price}
                   onChange={(e) => handlePackagePriceChange(key, e.target.value)}
-                  className="w-32 bg-white"
+                  className="w-20 bg-white text-sm"
                   min="0"
                 />
-                <span className="text-sm text-espresso/60">starting price</span>
+                <span className="text-xs text-espresso/60">
+                  {pkg.price_type === 'per_drink' ? '/drink' : 'flat'}
+                </span>
               </div>
-              <p className="text-xs text-espresso/50 mt-2">{pkg.description}</p>
+              <p className="text-xs text-espresso/50">{pkg.duration}</p>
             </div>
           ))}
         </div>

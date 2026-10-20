@@ -1565,8 +1565,9 @@ DEFAULT_EVENT_SETTINGS = {
         "other": {"enabled": True, "name": "Other Events", "icon": "calendar", "description": "Any special occasion"}
     },
     "packages": {
-        "small": {"name": "Small Gathering", "people_range": "10-25", "price": 150, "enabled": True, "description": "Perfect for small office meetings or intimate celebrations"},
-        "medium": {"name": "Medium Event", "people_range": "25-50", "price": 275, "enabled": True, "description": "Ideal for larger corporate events or parties"}
+        "visit": {"name": "Coffee Visit", "people_range": "5-8 drinks", "price": 7, "price_type": "per_drink", "enabled": True, "description": "Perfect for small offices or quick visits. Pay per drink.", "duration": "1 hour"},
+        "small": {"name": "Small Event", "people_range": "10-25 guests", "price": 300, "price_type": "flat", "enabled": True, "description": "Unlimited drinks for intimate gatherings and small celebrations.", "duration": "2 hours"},
+        "medium": {"name": "Medium Event", "people_range": "25-50 guests", "price": 500, "price_type": "flat", "enabled": True, "description": "Unlimited drinks for larger corporate events and parties.", "duration": "3 hours"}
     }
 }
 
