@@ -5,7 +5,7 @@ import { API, useShopStatus } from '../App';
 import { Button } from '../components/ui/button';
 import { 
   MapPin, Calendar, ArrowRight, CheckCircle,
-  Building2, Heart, PartyPopper, Trophy, Sparkles, GraduationCap, Users,
+  Building2, Heart, Trophy, Sparkles, GraduationCap, Users, Home,
   ChevronRight, Phone
 } from 'lucide-react';
 
@@ -28,7 +28,7 @@ export default function HomePage() {
     corporate: { icon: Building2, image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&h=400&fit=crop' },
     wedding: { icon: Heart, image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop' },
     graduation: { icon: GraduationCap, image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&h=400&fit=crop' },
-    birthday: { icon: PartyPopper, image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&h=400&fit=crop' },
+    birthday: { icon: Home, image: 'https://images.pexels.com/photos/5638599/pexels-photo-5638599.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop' },
     sports: { icon: Trophy, image: 'https://images.unsplash.com/photo-1598880513655-d1c6d4b2dfbf?w=600&h=400&fit=crop' },
     community: { icon: Users, image: 'https://images.unsplash.com/photo-1587517947347-293792660d1f?w=600&h=400&fit=crop' },
   };

@@ -6,7 +6,7 @@ import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
 import { toast } from 'sonner';
 import { 
-  Briefcase, Heart, GraduationCap, Trophy, Cake, Users, Calendar,
+  Briefcase, Heart, GraduationCap, Trophy, Cake, Users, Calendar, Home,
   Save, Loader2, DollarSign, Settings
 } from 'lucide-react';
 
@@ -16,6 +16,7 @@ const iconMap = {
   'graduation-cap': GraduationCap,
   'trophy': Trophy,
   'cake': Cake,
+  'home': Home,
   'users': Users,
   'calendar': Calendar,
 };

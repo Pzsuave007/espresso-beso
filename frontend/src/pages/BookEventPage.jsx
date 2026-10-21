@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { toast } from 'sonner';
 import { 
-  Briefcase, Heart, GraduationCap, Trophy, Cake, Users, Calendar,
+  Briefcase, Heart, GraduationCap, Trophy, Cake, Users, Calendar, Home,
   ArrowLeft, CheckCircle, Coffee, Loader2, MapPin, Phone, Mail, User, Building
 } from 'lucide-react';
 
@@ -17,6 +17,7 @@ const iconMap = {
   'graduation-cap': GraduationCap,
   'trophy': Trophy,
   'cake': Cake,
+  'home': Home,
   'users': Users,
   'calendar': Calendar,
 };

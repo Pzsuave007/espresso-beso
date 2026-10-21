@@ -270,7 +270,8 @@ def get_customer_confirmation_html(order: dict) -> str:
 
 def get_group_request_notification_html(request: dict) -> str:
     """HTML template for owner notification of new group/event request"""
-    event_type = request.get('event_type', 'other').replace('_', ' ').title()
+    event_type = request.get('event_type', 'other')
+    event_type = 'Family Event' if event_type == 'birthday' else event_type.replace('_', ' ').title()
     package_size = request.get('package_size', 'small').title()
     
     return f"""
@@ -1567,7 +1568,7 @@ DEFAULT_EVENT_SETTINGS = {
         "wedding": {"enabled": True, "name": "Weddings", "icon": "heart", "description": "Bridal showers, rehearsal dinners, wedding receptions"},
         "graduation": {"enabled": True, "name": "Graduations", "icon": "graduation-cap", "description": "Graduation parties and celebrations"},
         "sports": {"enabled": True, "name": "Sports Events", "icon": "trophy", "description": "Soccer games, tournaments, team events"},
-        "birthday": {"enabled": True, "name": "Birthday Parties", "icon": "cake", "description": "Birthday celebrations for all ages"},
+        "birthday": {"enabled": True, "name": "Family Events", "icon": "home", "description": "Family reunions, birthdays, baby showers and get-togethers"},
         "community": {"enabled": True, "name": "Community Events", "icon": "users", "description": "Neighborhood gatherings, fundraisers, festivals"},
         "other": {"enabled": True, "name": "Other Events", "icon": "calendar", "description": "Any special occasion"}
     },
@@ -2119,6 +2120,7 @@ app.add_middleware(
 async def migrate_event_package_ranges():
     await db.event_settings.update_one({"packages.visit.people_range": "5-8 drinks"}, {"$set": {"packages.visit.people_range": "5-10 drinks"}})
     await db.event_settings.update_one({"packages.small.people_range": "10-25 guests"}, {"$set": {"packages.small.people_range": "11-25 guests"}})
+    await db.event_settings.update_one({"event_types.birthday.name": "Birthday Parties"}, {"$set": {"event_types.birthday": DEFAULT_EVENT_SETTINGS["event_types"]["birthday"]}})
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

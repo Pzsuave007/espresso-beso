@@ -4,7 +4,7 @@ import axios from 'axios';
 import { API } from '../App';
 import { Button } from '../components/ui/button';
 import { 
-  Briefcase, Heart, GraduationCap, Trophy, Cake, Users, Calendar,
+  Briefcase, Heart, GraduationCap, Trophy, Cake, Users, Calendar, Home,
   Coffee, CheckCircle, ArrowRight, Star, Clock, MapPin
 } from 'lucide-react';
 
@@ -14,6 +14,7 @@ const iconMap = {
   'graduation-cap': GraduationCap,
   'trophy': Trophy,
   'cake': Cake,
+  'home': Home,
   'users': Users,
   'calendar': Calendar,
 };
