@@ -1,136 +1,192 @@
 {
-  "identity": {
-    "persona": "E1: The Anti-AI Designer",
-    "mission": "Create a 'Barista Luxury' mobile web experience that feels like a boutique coffee shop in your pocket.",
-    "core_principles": [
-      "Fusion: Digital Convenience x Old World Cafe Aesthetics",
-      "Emotion: Warmth, Intimacy, Craving",
-      "Content: Coffee is the hero. Use close-ups and rich textures.",
-      "Negative Space: Generous cream-colored breathing room."
+  "theme": "light",
+  "design_archetype": "Organic & Earthy Editorial Luxury",
+  "brand_identity": {
+    "name": "Espresso Beso",
+    "tagline": "Artisanal Mobile Espresso Bar & Event Catering",
+    "core_pivot": "Primary focus on Events & Catering service where we bring a full espresso bar setup directly to client venues (Weddings, Corporate, Graduations, Birthdays, Sports, Community). On-the-street mobile ordering remains secondary."
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Poppins, Cormorant Garamond, serif",
+      "rules": "DO NOT use Inter or generic sans for headings. Use tracking-tight or tracking-tighter for headers >32px.",
+      "sizes": {
+        "hero_h1": "text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-espresso",
+        "section_h2": "text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-espresso",
+        "subsection_h3": "text-xl sm:text-2xl font-semibold text-espresso",
+        "card_h4": "text-lg sm:text-xl font-medium text-espresso"
+      }
+    },
+    "body": {
+      "font_family": "Inter, sans-serif",
+      "sizes": {
+        "base": "text-base text-stone-700 leading-relaxed",
+        "small": "text-sm text-stone-600",
+        "label": "text-xs font-semibold uppercase tracking-[0.2em] text-burgundy"
+      }
+    }
+  },
+  "colors": {
+    "background_base": "#F5F0E1",
+    "background_card": "#FFFFFF",
+    "background_dark_accent": "#1A1A1A",
+    "primary_brand": "#8B1A1A",
+    "primary_hover": "#701515",
+    "gold_accent": "#8B6914",
+    "gold_light": "#A67C00",
+    "cream_light": "#FAF7EF",
+    "cream_dark": "#E6DCC3",
+    "text_espresso": "#1A1A1A",
+    "text_muted": "#5C5446",
+    "border_subtle": "#E6DCC3"
+  },
+  "packages_data": [
+    {
+      "id": "coffee-visit",
+      "name": "Coffee Visit",
+      "price": "$7",
+      "unit": "per drink",
+      "drinks": "5-8 drinks minimum",
+      "tagline": "Quick artisanal pop-up coffee break for small team gatherings or pop-ins.",
+      "features": [
+        "Fresh handcrafted espresso & specialty drinks",
+        "Full barista service on site (30 min - 1 hr)",
+        "Dairy & Oat milk options included",
+        "Ideal for office pop-ins & neighbor meetups"
+      ],
+      "popular": false,
+      "badge": "Flexible & Quick",
+      "cta": "Request Visit"
+    },
+    {
+      "id": "small-event",
+      "name": "Small Event Package",
+      "price": "$300",
+      "unit": "flat rate",
+      "drinks": "10-25 people (Unlimited drinks)",
+      "tagline": "Unlimited craft coffee, lattes, and syrups for intimate celebrations.",
+      "features": [
+        "Unlimited handcrafted espresso & signature lattes",
+        "Up to 2 hours of dedicated barista service",
+        "Full mobile bar setup + custom drink menu card",
+        "House-made syrups (Vanilla, Caramel, Hazelnut, Lavender)",
+        "Matcha & Chai options included"
+      ],
+      "popular": true,
+      "badge": "Most Popular",
+      "cta": "Book Small Event"
+    },
+    {
+      "id": "medium-event",
+      "name": "Medium Event Package",
+      "price": "$500",
+      "unit": "flat rate",
+      "drinks": "25-50 people (Unlimited drinks)",
+      "tagline": "The ultimate mobile espresso bar experience for medium gatherings & corporate parties.",
+      "features": [
+        "Unlimited custom drinks for up to 50 guests",
+        "Up to 3.5 hours of high-capacity barista service",
+        "Dual-barista workflow for fast service",
+        "Custom event branding / personalized cups option",
+        "Includes cold brews, seasonal specials & pastries setup option"
+      ],
+      "popular": false,
+      "badge": "Best Value",
+      "cta": "Book Medium Event"
+    }
+  ],
+  "event_types": [
+    {
+      "name": "Corporate & Office",
+      "icon": "Building2",
+      "desc": "Boost morale with morning latte catering, client appreciations, or product launches.",
+      "image": "https://images.pexels.com/photos/38598141/pexels-photo-38598141.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+      "name": "Weddings & Receptions",
+      "icon": "Heart",
+      "desc": "Treat guests to cozy latte art during cocktail hour or post-reception dessert.",
+      "image": "https://images.pexels.com/photos/34597470/pexels-photo-34597470.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    },
+    {
+      "name": "Graduations & Birthdays",
+      "icon": "PartyPopper",
+      "desc": "Memorable milestone celebrations with bespoke drink menus named after the host.",
+      "image": "https://images.unsplash.com/photo-1550731358-491ded4af838?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxNzV8MHwxfHNlYXJjaHwzfHxlc3ByZXNzbyUyMGJhciUyMGNhdGVyaW5nJTIwZXZlbnQlMjBiYXJpc3RhJTIwbGF0dGUlMjBhcnR8ZW58MHx8fHwxNzkyNTQwOTY4fDA&ixlib=rb-4.1.0&q=85"
+    },
+    {
+      "name": "Sports & Community",
+      "icon": "Trophy",
+      "desc": "Fuel tournament mornings, block parties, or neighborhood festivals with hot caffeine.",
+      "image": "https://images.pexels.com/photos/7648465/pexels-photo-7648465.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    }
+  ],
+  "image_urls": {
+    "hero_catering_bar": "https://images.pexels.com/photos/38591677/pexels-photo-38591677.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "barista_latte_art": "https://images.pexels.com/photos/7090426/pexels-photo-7090426.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "event_setup_wedding": "https://images.pexels.com/photos/34597470/pexels-photo-34597470.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "event_corporate_breakfast": "https://images.pexels.com/photos/38598141/pexels-photo-38598141.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "pouring_coffee_close_up": "https://images.unsplash.com/photo-1586011066531-f3a64f20d51d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxNzV8MHwxfHNlYXJjaHw0fHxlc3ByZXNzbyUyMGJhciUyMGNhdGVyaW5nJTIwZXZlbnQlMjBiYXJpc3RhJTIwbGF0dGUlMjBhcnR8ZW58MHx8fHwxNzkyNTQwOTY4fDA&ixlib=rb-4.1.0&q=85",
+    "cappuccino_cup": "https://images.unsplash.com/photo-1563311977-d285756282dc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxNzV8MHwxfHNlYXJjaHwyfHxlc3ByZXNzbyUyMGJhciUyMGNhdGVyaW5nJTIwZXZlbnQlMjBiYXJpc3RhJTIwbGF0dGUlMjBhcnR8ZW58MHx8fHwxNzkyNTQwOTY4fDA&ixlib=rb-4.1.0&q=85"
+  },
+  "component_path": "/app/frontend/src/pages/HomePage.js",
+  "layouts": {
+    "hero_section": "Asymmetric Split Hero with strong value prop: 'We bring the espresso bar to YOUR event'. Dual action buttons: Primary 'Book Your Event' (Scrolls to package/calculator) + Secondary 'Instant Quote Calculator'. Floating trust badge 'Serviced 120+ Events in 2025'. Subtle notice for street van pickup.",
+    "pricing_packages_section": "Bento-style comparison grid displaying 3 primary catering packages ($7/drink, $300 Small Event, $500 Medium Event) with clear highlight on Small Event as 'Most Popular'. Each card includes guest count, unlimited status, included perks, and direct 'Book Package' CTA.",
+    "interactive_quote_calculator": "An interactive widget where users drag a guest counter slider (5 to 100+ guests), select event duration, choose drink add-ons (pastries, oat milk, custom cups) to get an instant estimated quote and one-click request submission.",
+    "event_types_grid": "Grid showing 4 main event categories (Corporate, Weddings, Graduations/Birthdays, Community/Sports) with high-res photos, icon badges, and tailored text.",
+    "how_it_works_workflow": "4-step clear workflow: 1. Choose Package & Date -> 2. Tailor Your Drink Menu -> 3. We Arrive & Set Up in 20 Mins -> 4. Guests Enjoy Unlimited Barista Drinks.",
+    "secondary_daily_pickup_banner": "Subtle, elegant floating banner or lower section for daily street location tracking & individual online ordering: 'Looking for our daily street pop-up? Check live location & order individual drinks for pickup'."
+  },
+  "motion": {
+    "library": "framer-motion",
+    "effects": [
+      "Smooth entrance animations with stagger children (staggerChildren: 0.1)",
+      "Card hover lift with shadow expansion",
+      "Interactive slider step updates with animated numerical counter"
     ]
   },
-  "design_system": {
-    "colors": {
-      "palette": {
-        "cream_base": "#F5F0E1",
-        "gold_accent": "#8B6914",
-        "gold_light": "#A67C00",
-        "burgundy_pop": "#8B1A1A",
-        "espresso_black": "#1A1A1A",
-        "text_primary": "#0A0A0A",
-        "text_secondary": "#5C4D3C",
-        "white": "#FFFFFF"
-      },
-      "usage": {
-        "background": "bg-[#F5F0E1]",
-        "card_background": "bg-white",
-        "text_main": "text-[#0A0A0A]",
-        "text_muted": "text-[#5C4D3C]",
-        "primary_cta": "bg-[#8B1A1A] text-white hover:bg-[#701515]",
-        "secondary_cta": "bg-transparent border-2 border-[#8B6914] text-[#8B6914] hover:bg-[#8B6914] hover:text-white",
-        "accent_icon": "text-[#8B6914]",
-        "border_subtle": "border-[#E6DCC3]",
-        "border_strong": "border-[#8B6914]"
-      },
-      "dark_mode_strategy": "The 'Night Roast' Mode. Background becomes Deep Espresso (#1A120B), Text becomes Cream (#F5F0E1), Accents remain Gold."
-    },
-    "typography": {
-      "headings": {
-        "font_family": "Playfair Display, serif",
-        "weights": ["600", "700"],
-        "usage": "Use for Page Titles, Product Names, and 'Espresso Beso' branding. Tracking-tight.",
-        "tailwind_class": "font-serif tracking-tight"
-      },
-      "body": {
-        "font_family": "Manrope, sans-serif",
-        "weights": ["400", "500", "600"],
-        "usage": "Use for all UI elements, menus, descriptions, and buttons. Excellent legibility.",
-        "tailwind_class": "font-sans"
-      }
-    },
-    "spacing": {
-      "base_scale": 4,
-      "container_padding": "p-6 md:p-8",
-      "section_gap": "gap-8 md:gap-12",
-      "mobile_optimized": "Ensure touch targets are min 44px. Use pb-24 for pages with bottom nav."
-    },
-    "visual_enhancers": {
-      "radius": "rounded-2xl",
-      "shadows": {
-        "card": "shadow-[0_4px_20px_-2px_rgba(139,105,20,0.15)]",
-        "floating": "shadow-[0_8px_30px_-4px_rgba(139,105,20,0.2)]",
-        "text_glow": "drop-shadow-[0_0_15px_rgba(245,240,225,0.5)]"
-      },
-      "textures": {
-        "grain": "Use a subtle SVG noise overlay on the Cream background to simulate high-quality paper.",
-        "glass": "backdrop-blur-md bg-[#F5F0E1]/80 border border-white/20"
-      }
-    }
+  "accessibility": {
+    "wcag": "AA compliant, high contrast text over dark or cream containers.",
+    "data_testids_required": [
+      "hero-book-event-button",
+      "hero-quote-calc-button",
+      "package-card-coffee-visit",
+      "package-card-small-event",
+      "package-card-medium-event",
+      "package-book-button-coffee-visit",
+      "package-book-button-small-event",
+      "package-book-button-medium-event",
+      "guest-calculator-slider",
+      "calculator-instant-quote-display",
+      "calculator-submit-quote-button",
+      "event-type-corporate",
+      "event-type-weddings",
+      "event-type-graduations",
+      "event-type-sports",
+      "secondary-street-location-link"
+    ]
   },
-  "layout_strategies": {
-    "mobile_first": {
-      "navigation": "Sticky Bottom Navigation Bar (Home, Menu, Order, Profile).",
-      "header": "Minimal sticky header with Logo (Left) and Cart (Right).",
-      "cards": "Full width on mobile with p-4 internal padding."
-    },
-    "bento_grid": {
-      "mode": "MODE A: TETRIS",
-      "usage": "Menu Categories and 'About Us' section.",
-      "rules": "Mix tall product shots with square category tiles."
-    }
-  },
-  "components": {
-    "buttons": {
-      "primary": "rounded-full px-8 py-3 font-semibold transition-transform active:scale-95 shadow-lg",
-      "secondary": "rounded-full px-6 py-2 font-medium transition-colors"
-    },
-    "cards": {
-      "product": "bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group relative",
-      "zone_selector": "bg-white/50 border border-[#8B6914]/20 rounded-xl p-4 flex items-center gap-3 active:bg-[#8B6914]/10 transition-colors"
-    },
-    "inputs": {
-      "style": "bg-white border-none shadow-inner rounded-lg p-3 focus:ring-2 focus:ring-[#8B6914]"
-    },
-    "map": {
-      "library": "react-leaflet",
-      "style": "Custom marker icons (Coffee Cup). Map tiles should be 'Alidade Smooth' or similar muted style to match the cream theme."
-    }
-  },
-  "assets": {
-    "logo_urls": [
-      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/o7e1ny9i_Drink-Card---Espresso-Beso.jpg",
-      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/4n8y1acc_steaker%20design.png",
-      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/6pj83r1s_Facebook-Add-Image---Espresso-Beso2.png",
-      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/p9fi7093_Facebook-Add-Image---Espresso-Beso3.png",
-      "https://customer-assets.emergentagent.com/job_quick-coffee-track/artifacts/5ese8u3r_Facebook-Add-Image---Espresso-Beso4.png"
-    ],
-    "stock_images": {
-      "hero_latte": "https://images.unsplash.com/photo-1559001724-fbad036dbc9e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwxfHxlc3ByZXNzbyUyMGxhdHRlJTIwYXJ0JTIwY2xvc2UlMjB1cHxlbnwwfHx8fDE3NzIyMzc1Mjd8MA&ixlib=rb-4.1.0&q=85",
-      "latte_art_heart": "https://images.unsplash.com/photo-1630758769030-e58d72892314?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwyfHxlc3ByZXNzbyUyMGxhdHRlJTIwYXJ0JTIwY2xvc2UlMjB1cHxlbnwwfHx8fDE3NzIyMzc1Mjd8MA&ixlib=rb-4.1.0&q=85",
-      "coffee_beans_texture": "https://images.unsplash.com/photo-1769437031391-25445ec090ab?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHw0fHxyb2FzdGVkJTIwY29mZmVlJTIwYmVhbnMlMjB0ZXh0dXJlfGVufDB8fHx8MTc3MjIzNzU0MXww&ixlib=rb-4.1.0&q=85",
-      "lifestyle_people": "https://images.unsplash.com/photo-1758525223154-c1f7549ff888?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHwyfHxoYXBweSUyMHBlcnNvbiUyMGRyaW5raW5nJTIwY29mZmVlJTIwb3V0ZG9vcnxlbnwwfHx8fDE3NzIyMzc1NDJ8MA&ixlib=rb-4.1.0&q=85",
-      "generic_truck": "https://images.unsplash.com/photo-1715260275693-420d58797369?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHw0fHxjb2ZmZWUlMjB0cnVja3xlbnwwfHx8fDE3NzIyMzc1NDB8MA&ixlib=rb-4.1.0&q=85"
-    },
-    "icons": {
-      "library": "lucide-react",
-      "preferred_icons": ["Coffee", "MapPin", "ShoppingBag", "User", "Menu", "ChevronRight", "Star"]
-    }
-  },
-  "implementation_steps": [
-    "1. Setup Tailwind Theme: Extend colors with 'cream', 'gold', 'burgundy'. Add fonts.",
-    "2. Install Dependencies: npm install leaflet react-leaflet @types/leaflet",
-    "3. Create Layout Wrapper: Implement the 'App Shell' with bottom navigation for mobile.",
-    "4. Build Components: Button, ZoneCard, ProductCard (with customization modal), CartDrawer.",
-    "5. Map Integration: Build the 'LiveLocationMap' component using Leaflet.",
-    "6. Pages: Home (Landing + Zone), Menu (Product List), Cart, Admin Dashboard."
+  "instructions_to_main_agent": [
+    "Redesign /app/frontend/src/pages/HomePage.js to establish Events & Catering as the PRIMARY focus.",
+    "Hero title: 'Artisanal Espresso Catering Brought directly to Your Event.'",
+    "Prominently display the 3 pricing tiers ($7/drink, $300 Small Event, $500 Medium Event) with 'Book Now' actions that navigate to /book-event or trigger the quote modal.",
+    "Include an interactive Instant Event Estimator / Calculator so users can customize guest count and see instant price estimates.",
+    "Ensure the daily street location & online ordering functionality is preserved as a secondary CTA / banner on the homepage.",
+    "Maintain high aesthetic standards: rich cream backgrounds (#F5F0E1), burgundy primary buttons (#8B1A1A), serif display headings, subtle gold highlights (#8B6914), and responsive padding.",
+    "Attach all required data-testid attributes to buttons, cards, sliders, and form triggers."
   ],
-  "universal_guidelines": [
-    "NEVER use default blue links. All interactive elements must be Gold or Burgundy.",
-    "Use 'Sonner' for toasts (Order added, Payment success).",
-    "Ensure the 'Zone Selector' is the first thing users see on mobile (besides the hero).",
-    "Use skeletons for loading states.",
-    "All prices should be formatted as $X.XX",
-    "Admin Dashboard should use the 'High Density' Grid layout but keep the warm theme.",
-    "IMPORTANT: Add 'data-testid' to all interactive elements."
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Always add transitions for specific interactive elements.",
+    "You MUST NOT center align the app container.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, entrance animations.",
+    "Use generous spacing (p-6, p-8, p-12). Cramped designs look cheap.",
+    "All interactive and key informational elements MUST include data-testid attribute."
   ]
 }

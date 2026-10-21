@@ -1,674 +1,399 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Clock, ArrowRight, Coffee, Users, Calendar, Navigation, Loader2, CheckCircle, XCircle } from 'lucide-react';
-import LiveMap from '../components/LiveMap';
-import { Button } from '../components/ui/button';
 import axios from 'axios';
+import { API, useShopStatus } from '../App';
+import { Button } from '../components/ui/button';
+import { 
+  MapPin, Calendar, ArrowRight, CheckCircle,
+  Building2, Heart, PartyPopper, Trophy, Sparkles,
+  ChevronRight, Phone
+} from 'lucide-react';
 
-const API = process.env.REACT_APP_BACKEND_URL + '/api';
-const HERO_IMAGE = "https://images.unsplash.com/photo-1559001724-fbad036dbc9e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwxfHxlc3ByZXNzbyUyMGxhdHRlJTIwYXJ0JTIwY2xvc2UlMjB1cHxlbnwwfHx8fDE3NzIyMzc1Mjd8MA&ixlib=rb-4.1.0&q=85";
-const LOGO_DARK = "https://customer-assets.emergentagent.com/job_8eb9ed2b-80c2-447f-a8a6-53bb1c68d925/artifacts/82psuie2_Espresso-Vesso-Logo%20ready1.png";
-
-// Distance threshold in miles
-const NEARBY_DISTANCE_MILES = 1;
-
-// Calculate distance between two coordinates using Haversine formula
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 3959; // Earth's radius in miles
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
+const LOGO_URL = "https://customer-assets.emergentagent.com/job_8eb9ed2b-80c2-447f-a8a6-53bb1c68d925/artifacts/82psuie2_Espresso-Vesso-Logo%20ready1.png";
 
 export default function HomePage() {
-  const [todayZones, setTodayZones] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  // Nearby check state
-  const [checkingLocation, setCheckingLocation] = useState(false);
-  const [locationChecked, setLocationChecked] = useState(false);
-  const [isNearby, setIsNearby] = useState(false);
-  const [distance, setDistance] = useState(null);
-  const [locationError, setLocationError] = useState(null);
-  const [vanLocation, setVanLocation] = useState(null);
+  const { shopStatus } = useShopStatus();
+  const [guestCount, setGuestCount] = useState(25);
+  const [livePackages, setLivePackages] = useState(null);
 
   useEffect(() => {
-    // Fetch today's schedule
-    const fetchTodaySchedule = async () => {
-      try {
-        const response = await axios.get(`${API}/zones/today/schedule`);
-        setTodayZones(response.data);
-      } catch (error) {
-        console.error('Error fetching today schedule:', error);
-        // Fallback to all active zones
-        try {
-          const fallback = await axios.get(`${API}/zones/active`);
-          setTodayZones(fallback.data);
-        } catch (e) {
-          console.error('Error fetching fallback zones:', e);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTodaySchedule();
-
-    // Fetch van location for stationary mode check
-    const fetchVanLocation = async () => {
-      try {
-        const response = await axios.get(`${API}/van-location`);
-        setVanLocation(response.data);
-      } catch (error) {
-        console.error('Error fetching van location:', error);
-      }
-    };
-    fetchVanLocation();
-    
-    // Poll van location every 10 seconds
-    const interval = setInterval(fetchVanLocation, 10000);
-    return () => clearInterval(interval);
+    axios.get(`${API}/event-settings`).then((res) => setLivePackages(res.data.packages)).catch(() => {});
   }, []);
 
-  const formatTime = (time) => {
-    if (!time) return '';
-    const [hours, minutes] = time.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-    return `${displayHour}:${minutes} ${ampm}`;
+  const eventTypes = [
+    { name: 'Corporate & Office', icon: Building2, desc: 'Boost morale with morning latte catering, client appreciations, or product launches.', image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&h=400&fit=crop' },
+    { name: 'Weddings & Receptions', icon: Heart, desc: 'Treat guests to cozy latte art during cocktail hour or post-reception dessert.', image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop' },
+    { name: 'Graduations & Birthdays', icon: PartyPopper, desc: 'Memorable milestone celebrations with bespoke drink menus.', image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&h=400&fit=crop' },
+    { name: 'Sports & Community', icon: Trophy, desc: 'Fuel tournament mornings, block parties, or neighborhood festivals.', image: 'https://images.unsplash.com/photo-1587517947347-293792660d1f?w=600&h=400&fit=crop' },
+  ];
+
+  const basePackages = [
+    { id: 'visit', name: 'Coffee Visit', price: 7, unit: '/drink', guests: '5-8 drinks', duration: '1 hour', desc: 'Quick artisanal pop-up for small team gatherings.', features: ['Fresh handcrafted espresso', 'Full barista service', 'Dairy & Oat milk included'], popular: false, badge: 'Flexible' },
+    { id: 'small', name: 'Small Event', price: 300, unit: 'flat', guests: '10-25 people', duration: '2 hours', desc: 'Unlimited craft coffee for intimate celebrations.', features: ['Unlimited drinks', 'Full mobile bar setup', 'House-made syrups', 'Matcha & Chai options'], popular: true, badge: 'Most Popular' },
+    { id: 'medium', name: 'Medium Event', price: 500, unit: 'flat', guests: '25-50 people', duration: '3 hours', desc: 'Ultimate espresso bar for medium gatherings.', features: ['Unlimited custom drinks', 'High-capacity service', 'Custom event branding option', 'Cold brews & seasonal specials'], popular: false, badge: 'Best Value' },
+  ];
+
+  const packages = basePackages
+    .map((pkg) => {
+      const live = livePackages?.[pkg.id];
+      if (!live) return pkg;
+      return { ...pkg, name: live.name, price: live.price, guests: live.people_range, duration: live.duration, enabled: live.enabled, unit: live.price_type === 'per_drink' ? '/drink' : 'flat' };
+    })
+    .filter((pkg) => pkg.enabled !== false);
+
+  const findPkg = (id) => packages.find((p) => p.id === id);
+  const getEstimatedPackage = () => {
+    const visit = findPkg('visit');
+    const small = findPkg('small');
+    const medium = findPkg('medium');
+    if (guestCount <= 8 && visit) return { name: visit.name, price: guestCount * visit.price, unit: 'estimated' };
+    if (guestCount <= 25 && small) return { name: small.name, price: small.price, unit: 'flat rate' };
+    const fallback = medium || small || visit;
+    if (!fallback) return null;
+    return { name: fallback.name, price: fallback.price, unit: fallback.id === 'visit' ? '/drink' : 'flat rate' };
   };
+  const estimatedPackage = getEstimatedPackage();
 
-  const checkIfNearby = async () => {
-    setCheckingLocation(true);
-    setLocationError(null);
-    
-    try {
-      // Get van location first
-      const vanRes = await axios.get(`${API}/van-location`);
-      const van = vanRes.data;
-      setVanLocation(van);
-      
-      if (!van || van.status === 'offline') {
-        setLocationError("We're currently offline. Please request a visit for later!");
-        setCheckingLocation(false);
-        return;
-      }
-
-      // Get customer's location
-      if (!navigator.geolocation) {
-        setLocationError("Your browser doesn't support location. Please request a visit.");
-        setCheckingLocation(false);
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const dist = calculateDistance(latitude, longitude, van.lat, van.lng);
-          
-          setDistance(dist);
-          setIsNearby(dist <= NEARBY_DISTANCE_MILES);
-          setLocationChecked(true);
-          setCheckingLocation(false);
-        },
-        (error) => {
-          console.error('Location error:', error);
-          if (error.code === 1) {
-            setLocationError("Location access denied. You can still request a visit!");
-          } else {
-            setLocationError("Couldn't get your location. Please try again or request a visit.");
-          }
-          setCheckingLocation(false);
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    } catch (error) {
-      console.error('Error checking location:', error);
-      setLocationError("Something went wrong. Please try again.");
-      setCheckingLocation(false);
-    }
-  };
-
-  const resetLocationCheck = () => {
-    setLocationChecked(false);
-    setIsNearby(false);
-    setDistance(null);
-    setLocationError(null);
-  };
+  const steps = [
+    { num: '01', title: 'Choose Your Package', desc: 'Select the perfect package for your guest count and event type.' },
+    { num: '02', title: 'Pick Your Date', desc: 'Tell us when and where your event is happening.' },
+    { num: '03', title: 'We Set Up', desc: 'Our barista arrives 30 min early with full espresso bar setup.' },
+    { num: '04', title: 'Guests Enjoy', desc: 'Unlimited handcrafted drinks served with a smile.' },
+  ];
 
   return (
-    <div className="page-container" data-testid="home-page">
+    <div className="min-h-screen bg-[#F5F0E1] pb-20 md:pb-0" data-testid="homepage">
       {/* Hero Section */}
-      <section className="relative h-[50vh] min-h-[350px] overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${HERO_IMAGE})` }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-espresso/70 via-espresso/50 to-cream"></div>
-        </div>
-        
-        <div className="relative h-full flex flex-col items-center justify-center text-center px-6">
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-[#2D2D2D]"></div>
+        <div className="absolute inset-0 opacity-20">
           <img 
-            src={LOGO_DARK} 
-            alt="Espresso Beso" 
-            className="h-24 md:h-32 w-auto mb-4 drop-shadow-lg animate-fade-in"
+            src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&h=1080&fit=crop"
+            alt="Coffee atmosphere"
+            className="w-full h-full object-cover"
           />
-          <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-white font-bold tracking-tight mb-3 drop-shadow-lg animate-fade-in stagger-1">
-            We Come To You
-          </h1>
-          <p className="text-base md:text-lg text-white/90 max-w-lg mb-6 animate-fade-in stagger-2">
-            Premium mobile espresso delivered to your location. Request a visit and we'll bring the café to you!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 animate-fade-in stagger-3">
-            <Link to="/group-request">
-              <Button 
-                className="bg-burgundy hover:bg-burgundy-dark text-white rounded-full px-8 py-5 text-lg shadow-floating"
-                data-testid="request-visit-btn"
-              >
-                <Users className="w-5 h-5 mr-2" />
-                Request a Visit
-              </Button>
-            </Link>
-            <Link to="/menu">
-              <Button 
-                variant="outline"
-                className="bg-white/10 backdrop-blur border-white/30 text-white hover:bg-white/20 rounded-full px-8 py-5 text-lg"
-                data-testid="view-menu-btn"
-              >
-                <Coffee className="w-5 h-5 mr-2" />
-                View Menu
-              </Button>
-            </Link>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 md:px-8 py-20 md:py-32">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#8B6914]/20 rounded-full text-[#D4AF37] text-sm font-medium mb-6">
+                <Sparkles className="w-4 h-4" />
+                Events & Catering
+              </span>
+              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                Artisanal Espresso<br />
+                <span className="text-[#D4AF37]">Brought to Your Event</span>
+              </h1>
+              <p className="text-xl text-white/80 mb-8 max-w-lg">
+                We bring a complete mobile espresso bar to your venue. Corporate meetings, weddings, parties — premium coffee, professional barista, unforgettable experience.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Link to="/book-event">
+                  <Button 
+                    className="bg-[#8B1A1A] hover:bg-[#701515] text-white rounded-full px-8 py-6 text-lg font-semibold gap-2 w-full sm:w-auto"
+                    data-testid="hero-book-event-button"
+                  >
+                    <Calendar className="w-5 h-5" />
+                    Book Your Event
+                  </Button>
+                </Link>
+                <a href="#calculator">
+                  <Button 
+                    variant="outline" 
+                    className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white rounded-full px-8 py-6 text-lg w-full sm:w-auto"
+                    data-testid="hero-quote-calc-button"
+                  >
+                    Get Instant Quote
+                  </Button>
+                </a>
+              </div>
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-white/70 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
+                  <span>No Hidden Fees</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
+                  <span>Professional Setup</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Quick Quote Calculator Card */}
+            <div id="calculator" className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/20 scroll-mt-24" data-testid="quote-calculator">
+              <h3 className="text-white font-serif text-2xl mb-2">Instant Quote</h3>
+              <p className="text-white/60 text-sm mb-6">Slide to see your estimated price</p>
+              
+              <div className="mb-6">
+                <label className="text-white/80 text-sm mb-2 block">How many guests?</label>
+                <input
+                  type="range"
+                  min="5"
+                  max="60"
+                  value={guestCount}
+                  onChange={(e) => setGuestCount(parseInt(e.target.value))}
+                  className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#D4AF37]"
+                  data-testid="guest-calculator-slider"
+                />
+                <div className="flex justify-between text-white/60 text-xs mt-1">
+                  <span>5</span>
+                  <span className="text-[#D4AF37] font-bold text-lg" data-testid="guest-count-value">{guestCount}</span>
+                  <span>60+</span>
+                </div>
+              </div>
+              
+              <div className="bg-[#1A1A1A] rounded-2xl p-6 mb-6" data-testid="calculator-instant-quote-display">
+                <p className="text-white/60 text-sm mb-1">Recommended Package</p>
+                <p className="text-white font-serif text-xl mb-2" data-testid="calculator-package-name">{estimatedPackage?.name || 'Custom Quote'}</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[#D4AF37] font-bold text-4xl" data-testid="calculator-package-price">{estimatedPackage ? `$${estimatedPackage.price}` : 'Contact us'}</span>
+                  <span className="text-white/60 text-sm">{estimatedPackage?.unit}</span>
+                </div>
+              </div>
+              
+              <Link to="/book-event">
+                <Button 
+                  className="w-full bg-[#D4AF37] hover:bg-[#B8960F] text-[#1A1A1A] rounded-full py-6 font-semibold"
+                  data-testid="calculator-submit-quote-button"
+                >
+                  Book This Package
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Live Map Section */}
-      <section className="px-4 md:px-8 py-8 max-w-7xl mx-auto">
-        <div className="text-center mb-6">
-          <h2 className="section-title mb-2">Where Am I Now?</h2>
-          <p className="text-espresso/70">
-            Track our coffee van live and check if we're nearby!
-          </p>
-        </div>
-
-        {/* Stationary Mode Banner */}
-        {vanLocation?.mode === 'stationary' && vanLocation?.status !== 'offline' && (
-          <div className="mb-6 bg-gradient-to-r from-burgundy to-burgundy-dark rounded-2xl p-6 text-white shadow-floating animate-fade-in" data-testid="stationary-banner">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl">
-                  📍
-                </div>
-                <div>
-                  <h3 className="font-serif text-xl font-bold">We're Parked Today!</h3>
-                  {vanLocation?.stationary_location_name && (
-                    <p className="text-white/90 text-lg font-medium mt-1">
-                      {vanLocation.stationary_location_name}
-                    </p>
-                  )}
-                  <p className="text-white/70 text-sm mt-1">
-                    Come find us at this location - no delivery today!
-                  </p>
-                </div>
-              </div>
-              <Link to="/menu">
-                <Button className="bg-white text-burgundy hover:bg-cream rounded-full px-6 py-5 font-semibold">
-                  <Coffee className="w-5 h-5 mr-2" />
-                  Order for Pickup
-                </Button>
-              </Link>
-            </div>
+      {/* Packages Section */}
+      <section id="packages" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-12">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8B1A1A] mb-4 block">Pricing</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-4">
+              Simple, Transparent Packages
+            </h2>
+            <p className="text-[#5C5446] max-w-2xl mx-auto">
+              Choose the perfect package for your event. All packages include professional barista service and premium coffee.
+            </p>
           </div>
-        )}
-        
-        <div className="h-[400px] md:h-[450px]">
-          <LiveMap className="h-full" />
-        </div>
-
-        {/* Check If Nearby Section */}
-        <div className="mt-6 max-w-xl mx-auto">
-          {/* Stationary Mode - Different CTA */}
-          {vanLocation?.mode === 'stationary' && vanLocation?.status !== 'offline' && (
-            <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 text-center animate-fade-in">
-              <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
-                <MapPin className="w-10 h-10 text-amber-600" />
-              </div>
-              <h3 className="font-serif text-2xl font-bold text-amber-800 mb-2">
-                Come Find Us!
-              </h3>
-              <p className="text-amber-700 mb-2">
-                We're parked at a fixed location today
-              </p>
-              {vanLocation?.stationary_location_name && (
-                <p className="text-amber-900 font-semibold text-lg mb-4">
-                  {vanLocation.stationary_location_name}
-                </p>
-              )}
-              <Link to="/menu">
-                <Button className="bg-amber-600 hover:bg-amber-700 text-white rounded-full px-6">
-                  <Coffee className="w-5 h-5 mr-2" />
-                  View Menu & Order
-                </Button>
-              </Link>
-            </div>
-          )}
-
-          {/* Mobile Mode - Original Check Nearby Flow */}
-          {vanLocation?.mode !== 'stationary' && !locationChecked && !checkingLocation && !locationError && (
-            <div className="bg-white rounded-2xl shadow-card p-6 text-center">
-              <h3 className="font-serif text-xl font-semibold text-espresso mb-2">
-                Am I near you right now?
-              </h3>
-              <p className="text-espresso/70 text-sm mb-4">
-                Check your distance - if I'm close, you can order with no minimum!
-              </p>
-              <Button
-                onClick={checkIfNearby}
-                className="bg-gold hover:bg-gold-light text-white rounded-full px-6 py-5"
-                data-testid="check-nearby-btn"
+          
+          <div className={`grid gap-6 ${packages.length >= 3 ? 'md:grid-cols-3' : packages.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' : 'max-w-md mx-auto'}`}>
+            {packages.map((pkg) => (
+              <div 
+                key={pkg.id}
+                className={`rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 ${
+                  pkg.popular 
+                    ? 'bg-[#1A1A1A] text-white ring-4 ring-[#D4AF37]' 
+                    : 'bg-[#F5F0E1] hover:shadow-xl'
+                }`}
+                data-testid={`package-card-${pkg.id}`}
               >
-                <Navigation className="w-5 h-5 mr-2" />
-                Check If I'm Nearby
-              </Button>
-            </div>
-          )}
-
-          {checkingLocation && (
-            <div className="bg-white rounded-2xl shadow-card p-6 text-center">
-              <Loader2 className="w-10 h-10 text-gold animate-spin mx-auto mb-3" />
-              <p className="text-espresso/70">Checking your location...</p>
-            </div>
-          )}
-
-          {locationError && (
-            <div className="bg-white rounded-2xl shadow-card p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
-                <XCircle className="w-6 h-6 text-amber-600" />
-              </div>
-              <p className="text-espresso/70 mb-4">{locationError}</p>
-              <div className="flex gap-3 justify-center">
-                <Button
-                  onClick={resetLocationCheck}
-                  variant="outline"
-                  className="rounded-full"
-                >
-                  Try Again
-                </Button>
-                <Link to="/group-request">
-                  <Button className="bg-burgundy hover:bg-burgundy-dark text-white rounded-full">
-                    Request a Visit
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {locationChecked && isNearby && (
-            <div className="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-6 text-center animate-fade-in">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-10 h-10 text-emerald-600" />
-              </div>
-              <h3 className="font-serif text-2xl font-bold text-emerald-800 mb-2">
-                🎉 I'm Nearby!
-              </h3>
-              <p className="text-emerald-700 mb-1">
-                Only <span className="font-bold">{distance?.toFixed(1)} miles</span> away
-              </p>
-              <p className="text-emerald-600 text-lg font-semibold mb-4">
-                I'm nearby - NO MINIMUM ORDER! 👋
-              </p>
-              {vanLocation?.current_zone && (
-                <p className="text-emerald-700 mb-4">
-                  📍 Currently at: <span className="font-semibold">{vanLocation.current_zone}</span>
+                {pkg.badge && (
+                  <span className={`inline-block px-3 py-1 text-xs font-bold rounded-full mb-4 ${
+                    pkg.popular ? 'bg-[#D4AF37] text-[#1A1A1A]' : 'bg-[#8B1A1A]/10 text-[#8B1A1A]'
+                  }`}>
+                    {pkg.badge}
+                  </span>
+                )}
+                <h3 className={`font-serif text-2xl mb-1 ${pkg.popular ? 'text-white' : 'text-[#1A1A1A]'}`}>
+                  {pkg.name}
+                </h3>
+                <p className={`text-sm mb-4 ${pkg.popular ? 'text-white/60' : 'text-[#5C5446]'}`}>
+                  {pkg.guests} • {pkg.duration}
                 </p>
-              )}
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link to="/menu">
-                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full px-6">
-                    <Coffee className="w-5 h-5 mr-2" />
-                    View Menu & Order
+                <div className="mb-4">
+                  <span className={`text-4xl font-bold ${pkg.popular ? 'text-[#D4AF37]' : 'text-[#8B6914]'}`} data-testid={`package-price-${pkg.id}`}>
+                    ${pkg.price}
+                  </span>
+                  <span className={`text-sm ${pkg.popular ? 'text-white/60' : 'text-[#5C5446]'}`}>
+                    {' '}{pkg.unit}
+                  </span>
+                </div>
+                <p className={`text-sm mb-6 ${pkg.popular ? 'text-white/70' : 'text-[#5C5446]'}`}>
+                  {pkg.desc}
+                </p>
+                <ul className="space-y-2 mb-6">
+                  {pkg.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-2 text-sm">
+                      <CheckCircle className={`w-4 h-4 flex-shrink-0 ${pkg.popular ? 'text-[#D4AF37]' : 'text-green-600'}`} />
+                      <span className={pkg.popular ? 'text-white/80' : 'text-[#5C5446]'}>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/book-event">
+                  <Button 
+                    className={`w-full rounded-full py-5 ${
+                      pkg.popular 
+                        ? 'bg-[#D4AF37] hover:bg-[#B8960F] text-[#1A1A1A]' 
+                        : 'bg-[#8B1A1A] hover:bg-[#701515] text-white'
+                    }`}
+                    data-testid={`package-book-button-${pkg.id}`}
+                  >
+                    Book Now
+                    <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </Link>
-                <Button
-                  onClick={resetLocationCheck}
-                  variant="outline"
-                  className="border-emerald-400 text-emerald-700 rounded-full"
-                >
-                  Check Again
-                </Button>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
+        </div>
+      </section>
 
-          {locationChecked && !isNearby && (
-            <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 text-center animate-fade-in">
-              <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
-                <MapPin className="w-10 h-10 text-amber-600" />
-              </div>
-              <h3 className="font-serif text-2xl font-bold text-amber-800 mb-2">
-                I'm a Bit Far
-              </h3>
-              <p className="text-amber-700 mb-1">
-                You're <span className="font-bold">{distance?.toFixed(1)} miles</span> away
-              </p>
-              <p className="text-amber-600 mb-4">
-                Request a visit and I'll come to you! (5 drink minimum)
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link to="/group-request">
-                  <Button className="bg-burgundy hover:bg-burgundy-dark text-white rounded-full px-6">
-                    <Users className="w-5 h-5 mr-2" />
-                    Request a Visit
-                  </Button>
-                </Link>
-                <Button
-                  onClick={resetLocationCheck}
-                  variant="outline"
-                  className="border-amber-400 text-amber-700 rounded-full"
+      {/* Event Types Section */}
+      <section className="py-20 bg-[#F5F0E1]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-12">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8B1A1A] mb-4 block">What We Do</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1A1A1A] mb-4">
+              Perfect for Any Occasion
+            </h2>
+          </div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {eventTypes.map((event, idx) => {
+              const Icon = event.icon;
+              return (
+                <div 
+                  key={idx}
+                  className="group bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
+                  data-testid={`event-type-${event.name.toLowerCase().split(' ')[0]}`}
                 >
-                  Check Again
-                </Button>
-              </div>
-            </div>
-          )}
+                  <div className="h-40 overflow-hidden">
+                    <img 
+                      src={event.image}
+                      alt={event.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-[#8B1A1A]/10 flex items-center justify-center">
+                        <Icon className="w-4 h-4 text-[#8B1A1A]" />
+                      </div>
+                      <h3 className="font-serif text-lg text-[#1A1A1A]">{event.name}</h3>
+                    </div>
+                    <p className="text-sm text-[#5C5446]">{event.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="px-4 md:px-8 py-12 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="section-title mb-10 text-center">How It Works</h2>
+      <section className="py-20 bg-[#1A1A1A]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="text-center mb-12">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D4AF37] mb-4 block">Process</span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-4">
+              How It Works
+            </h2>
+            <p className="text-white/60 max-w-2xl mx-auto">
+              Booking your mobile espresso bar is simple. Here's what to expect.
+            </p>
+          </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "1",
-                title: "Check If I'm Nearby",
-                description: "See my live location. If I'm close, order directly with no minimum!",
-                icon: Navigation,
-              },
-              {
-                step: "2",
-                title: "Or Request a Visit",
-                description: "Too far? Request a visit to your location (5 drink minimum).",
-                icon: Users,
-              },
-              {
-                step: "3",
-                title: "Fresh Coffee On-Site",
-                description: "I'll prepare your drinks fresh right there. Hot, delicious, and ready!",
-                icon: Coffee,
-              },
-            ].map((item, index) => (
-              <div 
-                key={item.step}
-                className="text-center animate-fade-in"
-                style={{ animationDelay: `${index * 0.15}s` }}
-              >
-                <div className="w-16 h-16 rounded-full bg-burgundy/10 flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-8 h-8 text-burgundy" />
-                </div>
-                <span className="inline-block w-8 h-8 rounded-full bg-gold text-white font-semibold text-sm leading-8 mb-3">
-                  {item.step}
-                </span>
-                <h3 className="font-serif text-xl font-semibold text-espresso mb-2">{item.title}</h3>
-                <p className="text-espresso/70">{item.description}</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {steps.map((step, idx) => (
+              <div key={idx} className="text-center">
+                <div className="text-[#D4AF37] font-serif text-5xl font-bold mb-4 opacity-50">{step.num}</div>
+                <h3 className="text-white font-semibold text-lg mb-2">{step.title}</h3>
+                <p className="text-white/60 text-sm">{step.desc}</p>
               </div>
             ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link to="/book-event">
+              <Button className="bg-[#8B1A1A] hover:bg-[#701515] text-white rounded-full px-8 py-6 text-lg" data-testid="how-it-works-book-button">
+                Book Your Event Now
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Today's Service Areas */}
-      <section className="px-4 md:px-8 py-12 max-w-7xl mx-auto">
-        <div className="text-center mb-8">
-          <h2 className="section-title mb-2">Today's Service Areas</h2>
-          <p className="text-espresso/70">
-            I'll be traveling through these areas or events today.
-          </p>
-        </div>
-        
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {todayZones.map((zone, index) => (
-            <div 
-              key={zone.id}
-              className="bg-white rounded-2xl p-5 shadow-card hover:shadow-floating transition-all animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
-              data-testid={`schedule-zone-${zone.id}`}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-gold" />
-                </div>
-                <h3 className="font-serif font-semibold text-espresso">{zone.name}</h3>
+      {/* Daily Street Service Banner */}
+      <section className="py-12 bg-[#E6DCC3]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-[#8B1A1A] flex items-center justify-center">
+                <MapPin className="w-7 h-7 text-white" />
               </div>
-              {zone.time_windows && zone.time_windows.map((tw, i) => (
-                <div key={i} className="flex items-center gap-2 text-espresso/70 text-sm">
-                  <Clock className="w-4 h-4" />
-                  <span>{formatTime(tw.start)} - {formatTime(tw.end)}</span>
-                </div>
-              ))}
-              <Link to="/group-request" className="mt-4 block">
-                <Button 
-                  variant="outline" 
-                  className="w-full border-gold/30 text-gold hover:bg-gold hover:text-white rounded-full text-sm"
-                >
-                  Request Visit Here
+              <div>
+                <h3 className="font-serif text-xl text-[#1A1A1A]">Looking for our daily pop-up?</h3>
+                <p className="text-[#5C5446] text-sm">Check our live location & order individual drinks for pickup</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              {shopStatus?.is_online ? (
+                <span className="flex items-center gap-2 text-green-700 bg-green-100 px-4 py-2 rounded-full text-sm font-medium" data-testid="shop-status-online">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  We're Online
+                </span>
+              ) : (
+                <span className="flex items-center gap-2 text-[#5C5446] bg-white px-4 py-2 rounded-full text-sm" data-testid="shop-status-offline">
+                  Currently Offline
+                </span>
+              )}
+              <Link to="/menu" data-testid="secondary-street-location-link">
+                <Button variant="outline" className="border-[#8B1A1A] text-[#8B1A1A] hover:bg-[#8B1A1A] hover:text-white rounded-full">
+                  View Menu & Order
+                  <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Perfect For Section */}
-      <section className="px-4 md:px-8 py-12 bg-cream-dark/30">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="section-title mb-8 text-center">Perfect For</h2>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { 
-                title: "Office Breaks", 
-                desc: "Treat your team to premium coffee",
-                image: "https://images.unsplash.com/photo-1590649880765-91b1956b8276?w=400&h=300&fit=crop"
-              },
-              { 
-                title: "Events", 
-                desc: "Weddings, parties, corporate events",
-                image: "https://images.unsplash.com/photo-1772127822525-7eda37383b9f?w=400&h=300&fit=crop"
-              },
-              { 
-                title: "Neighborhoods", 
-                desc: "Get your neighbors together",
-                image: "https://images.unsplash.com/photo-1770790323277-c1ca469472db?w=400&h=300&fit=crop"
-              },
-              { 
-                title: "Construction Sites", 
-                desc: "Fuel the crew with great coffee",
-                image: "https://images.unsplash.com/photo-1759542878135-bc80368e74ef?w=400&h=300&fit=crop"
-              },
-            ].map((item, index) => (
-              <div 
-                key={item.title}
-                className="bg-white rounded-xl overflow-hidden shadow-card"
-              >
-                <div className="h-40 overflow-hidden">
-                  <img 
-                    src={item.image} 
-                    alt={item.title}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-4 text-center">
-                  <h3 className="font-serif font-semibold text-espresso mb-1">{item.title}</h3>
-                  <p className="text-sm text-espresso/70">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Events & Catering Section */}
-      <section className="px-4 md:px-8 py-16 bg-burgundy text-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <span className="inline-block px-4 py-2 bg-gold/20 rounded-full text-gold text-sm font-medium mb-4">
-                Events & Catering
-              </span>
-              <h2 className="font-serif text-3xl md:text-4xl mb-4">
-                Book Us For Your Next Event
-              </h2>
-              <p className="text-white/80 mb-6">
-                From corporate meetings to wedding celebrations, we bring the full espresso bar experience to your special occasion. Premium coffee, professional service, unforgettable moments.
-              </p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
-                  <span>Corporate Events & Office Meetings</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
-                  <span>Weddings & Private Parties</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
-                  <span>Sports Events & Community Gatherings</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-gold flex-shrink-0" />
-                  <span>Graduations & Birthday Celebrations</span>
-                </li>
-              </ul>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link to="/events">
-                  <Button className="bg-gold hover:bg-gold/90 text-espresso rounded-full px-6 py-5 font-semibold">
-                    View Packages
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-                <Link to="/book-event">
-                  <Button variant="outline" className="border-white text-white hover:bg-white/10 rounded-full px-6 py-5">
-                    Get a Quote
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <img 
-                src="https://images.unsplash.com/photo-1559001724-fbad036dbc9e?w=400&h=300&fit=crop"
-                alt="Corporate coffee event"
-                className="rounded-2xl h-48 w-full object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop"
-                alt="Wedding coffee service"
-                className="rounded-2xl h-48 w-full object-cover mt-8"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&h=300&fit=crop"
-                alt="Coffee catering"
-                className="rounded-2xl h-48 w-full object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=300&fit=crop"
-                alt="Espresso bar setup"
-                className="rounded-2xl h-48 w-full object-cover mt-8"
-              />
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="px-4 md:px-8 py-16 bg-espresso">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-3xl md:text-4xl text-cream font-bold mb-4">
-            Ready for Great Coffee?
+      <section className="py-20 bg-[#8B1A1A]">
+        <div className="max-w-4xl mx-auto px-4 md:px-8 text-center">
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-6">
+            Ready to Elevate Your Event?
           </h2>
-          <p className="text-cream/80 mb-8 text-lg">
-            Check if I'm nearby for no-minimum orders, or request a visit to your location!
+          <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
+            Let's create a memorable coffee experience for your guests. Get in touch today for a custom quote.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/group-request">
-              <Button 
-                className="bg-gold hover:bg-gold-light text-white rounded-full px-8 py-6 text-lg"
-                data-testid="cta-request-btn"
-              >
+            <Link to="/book-event">
+              <Button className="bg-[#D4AF37] hover:bg-[#B8960F] text-[#1A1A1A] rounded-full px-8 py-6 text-lg font-semibold w-full sm:w-auto" data-testid="cta-book-event-button">
                 <Calendar className="w-5 h-5 mr-2" />
-                Request a Visit
+                Book Your Event
               </Button>
             </Link>
-            <Link to="/menu">
-              <Button 
-                variant="outline"
-                className="border-cream/30 text-cream hover:bg-cream/10 rounded-full px-8 py-6 text-lg"
-              >
-                <Coffee className="w-5 h-5 mr-2" />
-                See Our Menu
+            <a href="tel:+15095551234" data-testid="cta-call-link">
+              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 hover:text-white rounded-full px-8 py-6 text-lg w-full sm:w-auto">
+                <Phone className="w-5 h-5 mr-2" />
+                Call Us
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Contact Footer */}
-      <footer className="bg-espresso text-white py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Logo & Tagline */}
-            <div className="text-center md:text-left">
-              <h3 className="font-serif text-2xl font-bold text-gold">Espresso Beso</h3>
-              <p className="text-cream/70 text-sm mt-1">Mobile Coffee, Made with Love ☕</p>
+      {/* Footer */}
+      <footer className="bg-[#1A1A1A] py-12">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <img src={LOGO_URL} alt="Espresso Beso" className="h-12 w-auto" />
+              <div>
+                <p className="text-white font-serif text-lg">Espresso Beso</p>
+                <p className="text-white/50 text-sm">Mobile Espresso & Event Catering</p>
+              </div>
             </div>
-            
-            {/* Contact Links */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-              {/* Phone */}
-              <a 
-                href="tel:503-985-6472"
-                className="flex items-center gap-2 text-cream hover:text-gold transition-colors"
-                data-testid="footer-phone"
-              >
-                <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                  </svg>
-                </div>
-                <span className="font-medium">503-985-6472</span>
-              </a>
-              
-              {/* Instagram */}
-              <a 
-                href="https://www.instagram.com/espressobeso"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-cream hover:text-gold transition-colors"
-                data-testid="footer-instagram"
-              >
-                <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-                  </svg>
-                </div>
-                <span className="font-medium">@espressobeso</span>
-              </a>
+            <div className="flex items-center gap-6 text-white/60 text-sm">
+              <Link to="/events" className="hover:text-white transition-colors">Events</Link>
+              <Link to="/menu" className="hover:text-white transition-colors">Menu</Link>
+              <Link to="/book-event" className="hover:text-white transition-colors">Book Event</Link>
             </div>
-          </div>
-          
-          {/* Bottom text */}
-          <div className="mt-6 pt-6 border-t border-cream/10 text-center text-cream/50 text-sm">
-            <p>Serving the Spokane area with mobile espresso goodness</p>
+            <p className="text-white/40 text-sm">© {new Date().getFullYear()} Espresso Beso. All rights reserved.</p>
           </div>
         </div>
       </footer>
