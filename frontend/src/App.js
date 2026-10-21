@@ -6,6 +6,7 @@ import { Toaster, toast } from "sonner";
 
 // Pages
 import HomePage from "./pages/HomePage";
+import LivePage from "./pages/LivePage";
 import MenuPage from "./pages/MenuPage";
 import CustomizePage from "./pages/CustomizePage";
 import CartPage from "./pages/CartPage";
@@ -82,6 +83,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/live" element={<LivePage />} />
           <Route path="/customize/:productId" element={<CustomizePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />

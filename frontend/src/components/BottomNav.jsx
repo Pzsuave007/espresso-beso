@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Coffee, ShoppingBag, Users } from 'lucide-react';
+import { Home, Coffee, ShoppingBag, Users, MapPin } from 'lucide-react';
 import { useCart } from '../App';
 
 export default function BottomNav() {
@@ -8,6 +8,7 @@ export default function BottomNav() {
 
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
+    { path: '/live', icon: MapPin, label: 'Live' },
     { path: '/menu', icon: Coffee, label: 'Menu' },
     { path: '/cart', icon: ShoppingBag, label: 'Cart', badge: cartCount },
     { path: '/group-request', icon: Users, label: 'Groups' },

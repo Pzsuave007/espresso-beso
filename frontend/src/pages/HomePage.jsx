@@ -48,6 +48,7 @@ export default function HomePage() {
     const medium = findPkg('medium');
     if (guestCount <= 8 && visit) return { name: visit.name, price: guestCount * visit.price, unit: 'estimated' };
     if (guestCount <= 25 && small) return { name: small.name, price: small.price, unit: 'flat rate' };
+    if (guestCount > 50) return null;
     const fallback = medium || small || visit;
     if (!fallback) return null;
     return { name: fallback.name, price: fallback.price, unit: fallback.id === 'visit' ? '/drink' : 'flat rate' };
@@ -62,7 +63,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F0E1] pb-20 md:pb-0" data-testid="homepage">
+    <div className="min-h-screen bg-[#F5F0E1]" data-testid="homepage">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-[#2D2D2D]"></div>
@@ -144,7 +145,7 @@ export default function HomePage() {
               
               <div className="bg-[#1A1A1A] rounded-2xl p-6 mb-6" data-testid="calculator-instant-quote-display">
                 <p className="text-white/60 text-sm mb-1">Recommended Package</p>
-                <p className="text-white font-serif text-xl mb-2" data-testid="calculator-package-name">{estimatedPackage?.name || 'Custom Quote'}</p>
+                <p className="text-white font-serif text-xl mb-2" data-testid="calculator-package-name">{estimatedPackage?.name || 'Custom Quote (50+ guests)'}</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-[#D4AF37] font-bold text-4xl" data-testid="calculator-package-price">{estimatedPackage ? `$${estimatedPackage.price}` : 'Contact us'}</span>
                   <span className="text-white/60 text-sm">{estimatedPackage?.unit}</span>
@@ -307,7 +308,7 @@ export default function HomePage() {
           
           <div className="text-center mt-12">
             <Link to="/book-event">
-              <Button className="bg-[#8B1A1A] hover:bg-[#701515] text-white rounded-full px-8 py-6 text-lg" data-testid="how-it-works-book-button">
+              <Button className="bg-[#8B1A1A] hover:bg-[#701515] text-white rounded-full px-8 py-6 text-lg w-full sm:w-auto" data-testid="how-it-works-book-button">
                 Book Your Event Now
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -340,9 +341,9 @@ export default function HomePage() {
                   Currently Offline
                 </span>
               )}
-              <Link to="/menu" data-testid="secondary-street-location-link">
-                <Button variant="outline" className="border-[#8B1A1A] text-[#8B1A1A] hover:bg-[#8B1A1A] hover:text-white rounded-full">
-                  View Menu & Order
+              <Link to="/live" data-testid="secondary-street-location-link">
+                <Button variant="outline" className="bg-transparent border-[#8B1A1A] text-[#8B1A1A] hover:bg-[#8B1A1A] hover:text-white rounded-full">
+                  See Live Map
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
@@ -378,17 +379,18 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1A1A1A] py-12">
+      <footer className="bg-[#1A1A1A] pt-12 pb-28 md:pb-12">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
-              <img src={LOGO_URL} alt="Espresso Beso" className="h-12 w-auto" />
+              <div className="bg-[#F5F0E1] rounded-2xl px-3 py-2"><img src={LOGO_URL} alt="Espresso Beso" className="h-10 w-auto" data-testid="footer-logo" /></div>
               <div>
                 <p className="text-white font-serif text-lg">Espresso Beso</p>
                 <p className="text-white/50 text-sm">Mobile Espresso & Event Catering</p>
               </div>
             </div>
             <div className="flex items-center gap-6 text-white/60 text-sm">
+              <Link to="/live" className="hover:text-white transition-colors" data-testid="footer-live-link">Live Location</Link>
               <Link to="/events" className="hover:text-white transition-colors">Events</Link>
               <Link to="/menu" className="hover:text-white transition-colors">Menu</Link>
               <Link to="/book-event" className="hover:text-white transition-colors">Book Event</Link>

@@ -39,6 +39,13 @@ export default function Header() {
             Menu
           </Link>
           <Link 
+            to="/live" 
+            className="text-espresso/80 hover:text-gold transition-colors font-medium"
+            data-testid="nav-live"
+          >
+            Live Location
+          </Link>
+          <Link 
             to="/events" 
             className="text-espresso/80 hover:text-gold transition-colors font-medium"
             data-testid="nav-events"
@@ -99,6 +106,14 @@ export default function Header() {
                   data-testid="mobile-nav-menu"
                 >
                   Menu
+                </Link>
+                <Link 
+                  to="/live" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-lg font-medium text-espresso hover:text-gold transition-colors py-2"
+                  data-testid="mobile-nav-live"
+                >
+                  Live Location
                 </Link>
                 <Link 
                   to="/events" 
