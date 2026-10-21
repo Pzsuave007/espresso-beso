@@ -1,0 +1,29 @@
+{
+  "summary": "Tested the offline browse-only menu and the online/offline ordering gate end to end. Backend: 6/6 pytest passed. Offline: POST /api/orders returns 403 and POST /api/stripe/create-checkout returns 403, both with the message 'We're currently offline...'. The toggle endpoint rejects requests with no auth. Online: an order is created, fetched, then cancelled. Stripe checkout is no longer blocked (404 for a fake order). Frontend offline: /menu shows menu-offline-banner with the exact text and a Book an Event link to /book-event. The menu shows 10 product cards with all images loaded, plus prices, category filters (All/Signature Drinks/Espresso Classics) and search. All 10 add-to-cart buttons are disabled and read 'Ordering Offline'; clicking one does not navigate. On /customize/{id} options and quantity work, confirm-add-to-cart is disabled and reads 'Ordering Offline', and clicking it adds nothing to the cart. /cart shows cart-page-empty when empty. With an injected cart it shows cart-page-offline, both links work, and the cart stays saved. Mobile layout of the banner is fine. Frontend online: menu-online-banner shows, all buttons are enabled and read 'Add to Order', customize adds to cart, and /cart goes Cart -> Details -> Pay step (payment options shown, payment not completed). The shop is left ONLINE and the test cart is cleared.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Menu cards / Customize footer (offline)", "issues": ["Disabled 'Ordering Offline' button: light text on bg-espresso/40 with the default disabled opacity is hard to read. Consider a solid muted color without the extra opacity."]},
+      {"screen": "Customize page (offline)", "issues": ["Only the disabled button signals offline. Consider a small inline notice or a Book an Event link, matching the menu banner."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_shop_offline_ordering.py", "/app/test_reports/pytest/pytest_shop_offline.xml"],
+  "action_items": [
+    "Optional: improve contrast of the disabled 'Ordering Offline' buttons",
+    "Optional: add an offline notice on CustomizePage"
+  ],
+  "critical_code_review_comments": [
+    "CustomizePage.handleAddToCart and App.addToCart do not check shopStatus themselves; only the disabled button blocks adding. This is low risk because the server enforces ensure_shop_online.",
+    "If the shop goes offline while a customer is on step 3 (Pay), CartPage switches to the offline view on the next poll. That is acceptable, but the step state is lost.",
+    "There is no DELETE /api/orders/{id}; test orders can only be cancelled, so cancelled TEST_ orders build up in the DB."
+  ],
+  "updated_files": ["/app/backend/tests/test_shop_offline_ordering.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin@espressobeso.com / TestAdmin123! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "1 test order was created while online (customer name 'TEST_offline_user') and was cancelled via POST /api/orders/{id}/cancel. No orders were created through the UI (payment was not completed).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "test_shop_offline_ordering.py toggles the shop offline then online and leaves it ONLINE. The cart is stored in localStorage key 'espresso_cart'. A sample product id is f6ef057a-33f4-4485-a66b-2bff1e3b2c75 (Beso Delight)."
+}

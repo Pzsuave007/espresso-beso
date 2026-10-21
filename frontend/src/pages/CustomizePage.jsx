@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { API, useCart, useShopStatus } from '../App';
 import { ArrowLeft, Plus, Minus, Clock } from 'lucide-react';
@@ -198,6 +198,11 @@ export default function CustomizePage() {
       {/* Sticky Footer */}
       <div className="sticky bottom-0 bg-white border-t border-cream-dark shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-4">
+          {!canOrder && (
+            <p className="text-sm text-espresso/70 text-center mb-3" data-testid="customize-offline-notice">
+              We're offline right now — ordering opens when we're online. <Link to="/book-event" className="text-burgundy font-semibold underline" data-testid="customize-offline-book-event-link">Book an Event</Link>
+            </p>
+          )}
           <div className="flex justify-between items-center mb-3">
             <span className="text-espresso/70">Total</span>
             <span className="text-3xl font-bold text-gold">${(calculatePrice() * quantity).toFixed(2)}</span>
@@ -205,7 +210,7 @@ export default function CustomizePage() {
           <Button
             onClick={handleAddToCart}
             disabled={!canOrder}
-            className="w-full bg-burgundy hover:bg-burgundy-dark text-white rounded-full py-6 text-lg font-semibold disabled:bg-espresso/40"
+            className="w-full bg-burgundy hover:bg-burgundy-dark text-white rounded-full py-6 text-lg font-semibold disabled:bg-[#8C8275] disabled:text-white disabled:opacity-100"
             data-testid="confirm-add-to-cart"
           >
             {canOrder ? <Plus className="w-5 h-5 mr-2" /> : <Clock className="w-5 h-5 mr-2" />}

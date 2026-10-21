@@ -40,7 +40,7 @@ export default function ProductCard({ product, canOrder = true }) {
         <Button
           onClick={handleOpenCustomization}
           disabled={!product.is_available || !canOrder}
-          className="w-full bg-burgundy hover:bg-burgundy-dark text-white rounded-full disabled:bg-espresso/40"
+          className="w-full bg-burgundy hover:bg-burgundy-dark text-white rounded-full disabled:bg-[#8C8275] disabled:text-white disabled:opacity-100"
           data-testid={`add-to-cart-${product.id}`}
         >
           {canOrder ? <Plus className="w-4 h-4 mr-2" /> : <Clock className="w-4 h-4 mr-2" />}

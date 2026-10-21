@@ -233,3 +233,4 @@ Build a modern web platform for "Espresso Beso" - a mobile espresso coffee servi
 - P1: QR codes linking to menu/ordering
 - P2: Out-of-stock toggle in menu manager
 - Future: customer accounts, CSV export, customer notes, FAQ/testimonials
+- Offline mode (June 2026): /menu always visible; offline banner + Book an Event; Add to Order disabled ("Ordering Offline") on cards & customize page; cart shows offline screen (cart kept); backend ensure_shop_online() blocks POST /api/orders and /api/stripe/create-checkout with 403. Tested iteration_6 (pass).
