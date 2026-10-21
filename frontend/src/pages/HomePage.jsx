@@ -5,7 +5,7 @@ import { API, useShopStatus } from '../App';
 import { Button } from '../components/ui/button';
 import { 
   MapPin, Calendar, ArrowRight, CheckCircle,
-  Building2, Heart, PartyPopper, Trophy, Sparkles,
+  Building2, Heart, PartyPopper, Trophy, Sparkles, GraduationCap, Users,
   ChevronRight, Phone
 } from 'lucide-react';
 
@@ -15,17 +15,28 @@ export default function HomePage() {
   const { shopStatus } = useShopStatus();
   const [guestCount, setGuestCount] = useState(25);
   const [livePackages, setLivePackages] = useState(null);
+  const [liveEventTypes, setLiveEventTypes] = useState(null);
 
   useEffect(() => {
-    axios.get(`${API}/event-settings`).then((res) => setLivePackages(res.data.packages)).catch(() => {});
+    axios.get(`${API}/event-settings`).then((res) => {
+      setLivePackages(res.data.packages);
+      setLiveEventTypes(res.data.event_types);
+    }).catch(() => {});
   }, []);
 
-  const eventTypes = [
-    { name: 'Corporate & Office', icon: Building2, desc: 'Boost morale with morning latte catering, client appreciations, or product launches.', image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&h=400&fit=crop' },
-    { name: 'Weddings & Receptions', icon: Heart, desc: 'Treat guests to cozy latte art during cocktail hour or post-reception dessert.', image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop' },
-    { name: 'Graduations & Birthdays', icon: PartyPopper, desc: 'Memorable milestone celebrations with bespoke drink menus.', image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&h=400&fit=crop' },
-    { name: 'Sports & Community', icon: Trophy, desc: 'Fuel tournament mornings, block parties, or neighborhood festivals.', image: 'https://images.unsplash.com/photo-1587517947347-293792660d1f?w=600&h=400&fit=crop' },
-  ];
+  const eventVisuals = {
+    corporate: { icon: Building2, image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&h=400&fit=crop' },
+    wedding: { icon: Heart, image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=400&fit=crop' },
+    graduation: { icon: GraduationCap, image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&h=400&fit=crop' },
+    birthday: { icon: PartyPopper, image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&h=400&fit=crop' },
+    sports: { icon: Trophy, image: 'https://images.unsplash.com/photo-1598880513655-d1c6d4b2dfbf?w=600&h=400&fit=crop' },
+    community: { icon: Users, image: 'https://images.unsplash.com/photo-1587517947347-293792660d1f?w=600&h=400&fit=crop' },
+  };
+  const eventTypes = liveEventTypes
+    ? Object.entries(liveEventTypes)
+        .filter(([key, v]) => v.enabled && eventVisuals[key])
+        .map(([key, v]) => ({ key, name: v.name, desc: v.description, ...eventVisuals[key] }))
+    : [];
 
   const basePackages = [
     { id: 'visit', name: 'Coffee Visit', price: 7, unit: '/drink', guests: '5-10 drinks', duration: '1 hour', desc: 'Quick artisanal pop-up for small team gatherings.', features: ['Fresh handcrafted espresso', 'Full barista service', 'Dairy & Oat milk included'], popular: false, badge: 'Flexible' },
@@ -251,14 +262,14 @@ export default function HomePage() {
             </h2>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {eventTypes.map((event, idx) => {
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {eventTypes.map((event) => {
               const Icon = event.icon;
               return (
                 <div 
-                  key={idx}
+                  key={event.key}
                   className="group bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
-                  data-testid={`event-type-${event.name.toLowerCase().split(' ')[0]}`}
+                  data-testid={`event-type-${event.key}`}
                 >
                   <div className="h-40 overflow-hidden">
                     <img 
