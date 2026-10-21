@@ -238,3 +238,4 @@ Build a modern web platform for "Espresso Beso" - a mobile espresso coffee servi
 - 'Birthday Parties' event type renamed to 'Family Events' (key 'birthday' kept; icon 'home'; startup migration renames & enables it once; admin email shows 'Family Event').
 - Menu cards & customize page show per-size prices (e.g. 12oz $5 · 16oz $7) computed from each item's Size customization (getSizePrices in ProductCard.jsx).
 - USER PREF: always give the server update command at end of each change: cd <repo> && git pull && sudo ./deploy/p.sh (after Save to GitHub)
+- USER PREF: Chat with user in Spanish, but ALL website/app content must be in ENGLISH by default (never translate site to Spanish unless user explicitly asks).
