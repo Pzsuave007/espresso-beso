@@ -5,6 +5,7 @@ import { API, useCart, useShopStatus } from '../App';
 import { ArrowLeft, Plus, Minus, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
+import { getSizePrices } from '../components/ProductCard';
 
 export default function CustomizePage() {
   const { productId } = useParams();
@@ -128,7 +129,14 @@ export default function CustomizePage() {
         <div className="mb-8">
           <div className="flex justify-between items-start mb-2">
             <h2 className="font-serif text-3xl text-espresso">{product.name}</h2>
-            <span className="text-2xl font-bold text-gold">${product.price.toFixed(2)}</span>
+            <div className="text-right" data-testid="customize-size-prices">
+              {getSizePrices(product).length > 0 ? getSizePrices(product).map((s) => (
+                <div key={s.label} className="text-lg">
+                  <span className="text-espresso/70 font-medium mr-2">{s.label}</span>
+                  <span className="font-bold text-gold">${s.price.toFixed(2)}</span>
+                </div>
+              )) : <span className="text-2xl font-bold text-gold">${product.price.toFixed(2)}</span>}
+            </div>
           </div>
           <span className="badge-gold text-sm mb-3 inline-block">{product.category}</span>
           <p className="text-espresso/70">{product.description}</p>

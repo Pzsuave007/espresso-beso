@@ -2,7 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 
+export const getSizePrices = (product) => {
+  const size = product.customizations?.find((c) => c.name.toLowerCase() === 'size');
+  if (!size?.options?.length) return [];
+  return size.options.map((opt) => ({ label: opt, price: product.price + (size.price_modifier?.[opt] || 0) }));
+};
+
 export default function ProductCard({ product, canOrder = true }) {
+  const sizePrices = getSizePrices(product);
   const navigate = useNavigate();
 
   const handleOpenCustomization = () => {
@@ -32,8 +39,18 @@ export default function ProductCard({ product, canOrder = true }) {
             <h3 className="font-serif text-lg font-semibold text-espresso">{product.name}</h3>
             <span className="badge-gold text-xs">{product.category}</span>
           </div>
-          <span className="price-tag">${product.price.toFixed(2)}</span>
+          {sizePrices.length === 0 && <span className="price-tag">${product.price.toFixed(2)}</span>}
         </div>
+        {sizePrices.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3" data-testid={`size-prices-${product.id}`}>
+            {sizePrices.map((s) => (
+              <span key={s.label} className="inline-flex items-baseline gap-1.5 bg-cream rounded-full px-3 py-1 text-sm">
+                <span className="text-espresso/70 font-medium">{s.label}</span>
+                <span className="text-gold font-bold">${s.price.toFixed(2)}</span>
+              </span>
+            ))}
+          </div>
+        )}
         
         <p className="text-sm text-espresso/70 mb-4 line-clamp-2">{product.description}</p>
         
