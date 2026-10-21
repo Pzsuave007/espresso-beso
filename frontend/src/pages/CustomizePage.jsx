@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { API, useCart } from '../App';
-import { ArrowLeft, Plus, Minus } from 'lucide-react';
+import { API, useCart, useShopStatus } from '../App';
+import { ArrowLeft, Plus, Minus, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 
@@ -10,6 +10,8 @@ export default function CustomizePage() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { shopStatus } = useShopStatus();
+  const canOrder = !!shopStatus.is_online;
   
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -202,11 +204,12 @@ export default function CustomizePage() {
           </div>
           <Button
             onClick={handleAddToCart}
-            className="w-full bg-burgundy hover:bg-burgundy-dark text-white rounded-full py-6 text-lg font-semibold"
+            disabled={!canOrder}
+            className="w-full bg-burgundy hover:bg-burgundy-dark text-white rounded-full py-6 text-lg font-semibold disabled:bg-espresso/40"
             data-testid="confirm-add-to-cart"
           >
-            <Plus className="w-5 h-5 mr-2" />
-            Add to Order
+            {canOrder ? <Plus className="w-5 h-5 mr-2" /> : <Clock className="w-5 h-5 mr-2" />}
+            {canOrder ? 'Add to Order' : 'Ordering Offline'}
           </Button>
         </div>
       </div>

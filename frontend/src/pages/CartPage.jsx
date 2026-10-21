@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { API, useCart } from '../App';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, CreditCard, Copy, Check, ExternalLink, MapPin } from 'lucide-react';
+import { API, useCart, useShopStatus } from '../App';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, CreditCard, Copy, Check, ExternalLink, MapPin, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -48,6 +48,7 @@ const MANUAL_PAYMENT_OPTIONS = {
 export default function CartPage() {
   const navigate = useNavigate();
   const { cart, removeFromCart, updateCartQuantity, clearCart, cartTotal } = useCart();
+  const { shopStatus } = useShopStatus();
   const [step, setStep] = useState(1); // 1: Cart, 2: Customer Info, 3: Payment
   const [loading, setLoading] = useState(false);
   const [customerInfo, setCustomerInfo] = useState({
@@ -266,6 +267,28 @@ export default function CartPage() {
   const handleCheckout = async () => {
     handleProceedToPayment();
   };
+
+  if (!shopStatus.is_online && cart.length > 0) {
+    return (
+      <div className="page-container" data-testid="cart-page-offline">
+        <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+          <Clock className="w-20 h-20 text-espresso/30 mx-auto mb-6" />
+          <h1 className="font-serif text-3xl text-espresso mb-4">We're Currently Offline</h1>
+          <p className="text-espresso/70 mb-8">
+            Your cart is saved. Ordering opens as soon as we're back online.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to="/menu" data-testid="cart-offline-menu-link">
+              <Button variant="outline" className="rounded-full px-8 py-6 text-lg w-full sm:w-auto">Browse Menu</Button>
+            </Link>
+            <Link to="/book-event" data-testid="cart-offline-book-event-link">
+              <Button className="bg-burgundy hover:bg-burgundy-dark text-white rounded-full px-8 py-6 text-lg w-full sm:w-auto">Book an Event</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (

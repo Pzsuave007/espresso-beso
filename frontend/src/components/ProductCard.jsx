@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, canOrder = true }) {
   const navigate = useNavigate();
 
   const handleOpenCustomization = () => {
@@ -39,12 +39,12 @@ export default function ProductCard({ product }) {
         
         <Button
           onClick={handleOpenCustomization}
-          disabled={!product.is_available}
-          className="w-full bg-burgundy hover:bg-burgundy-dark text-white rounded-full"
+          disabled={!product.is_available || !canOrder}
+          className="w-full bg-burgundy hover:bg-burgundy-dark text-white rounded-full disabled:bg-espresso/40"
           data-testid={`add-to-cart-${product.id}`}
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Add to Order
+          {canOrder ? <Plus className="w-4 h-4 mr-2" /> : <Clock className="w-4 h-4 mr-2" />}
+          {canOrder ? 'Add to Order' : 'Ordering Offline'}
         </Button>
       </div>
     </div>

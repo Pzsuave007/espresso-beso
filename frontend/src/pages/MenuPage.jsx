@@ -43,68 +43,33 @@ export default function MenuPage() {
     return matchesCategory && matchesSearch;
   });
 
-  // Show offline message if shop is not online
-  if (!shopStatus.is_online) {
-    return (
-      <div className="page-container" data-testid="menu-page-offline">
-        <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-          <div className="bg-white rounded-3xl shadow-card p-8 md:p-12">
-            <div className="w-20 h-20 bg-cream rounded-full flex items-center justify-center mx-auto mb-6">
-              <Clock className="w-10 h-10 text-espresso/50" />
-            </div>
-            <h1 className="font-serif text-3xl md:text-4xl text-espresso mb-4">
-              We're Currently Offline
-            </h1>
-            <p className="text-espresso/70 text-lg mb-8">
-              Our mobile espresso van isn't taking orders right now, but you can request a visit and we'll come to you!
-            </p>
-            <Link to="/group-request">
-              <Button className="bg-burgundy hover:bg-burgundy-dark text-white rounded-full px-8 py-6 text-lg gap-2">
-                <CalendarPlus className="w-5 h-5" />
-                Request a Visit
-              </Button>
-            </Link>
-            <p className="text-espresso/50 text-sm mt-6">
-              Perfect for events, offices, or your neighborhood!
-            </p>
-          </div>
-          
-          {/* Preview menu items */}
-          <div className="mt-12">
-            <h2 className="font-serif text-2xl text-espresso mb-6">Check Out Our Menu</h2>
-            <p className="text-espresso/60 mb-8">Browse what we offer - order when we're online!</p>
-            {!loading && (
-              <div className="grid sm:grid-cols-2 gap-4">
-                {menuItems.slice(0, 4).map((item) => (
-                  <div key={item.id} className="bg-white rounded-2xl p-4 flex items-center gap-4 opacity-75">
-                    <img 
-                      src={item.image_url} 
-                      alt={item.name} 
-                      className="w-16 h-16 rounded-xl object-cover"
-                    />
-                    <div className="text-left">
-                      <h3 className="font-semibold text-espresso">{item.name}</h3>
-                      <p className="text-gold font-bold">${item.price.toFixed(2)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="page-container" data-testid="menu-page">
-      {/* Online Status Banner */}
-      <div className="bg-green-500 text-white py-2 px-4 text-center text-sm">
-        <span className="inline-flex items-center gap-2">
-          <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-          We're Online - Order Now!
-        </span>
-      </div>
+      {shopStatus.is_online ? (
+        <div className="bg-green-500 text-white py-2 px-4 text-center text-sm" data-testid="menu-online-banner">
+          <span className="inline-flex items-center gap-2">
+            <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+            We're Online - Order Now!
+          </span>
+        </div>
+      ) : (
+        <div className="bg-espresso text-cream px-4 py-4" data-testid="menu-offline-banner">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <div className="flex items-center gap-3">
+              <Clock className="w-5 h-5 text-gold flex-shrink-0" />
+              <p className="text-sm md:text-base">
+                <span className="font-semibold">We're Offline:</span> browse our menu — ordering opens when we're online.
+              </p>
+            </div>
+            <Link to="/book-event" data-testid="menu-offline-book-event-link">
+              <Button className="bg-gold hover:bg-gold-light text-espresso rounded-full px-6 gap-2 font-semibold">
+                <CalendarPlus className="w-4 h-4" />
+                Book an Event
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
       
       {/* Header */}
       <div className="bg-white border-b border-cream-dark">
@@ -182,7 +147,7 @@ export default function MenuPage() {
                 className="animate-fade-in"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <ProductCard product={item} />
+                <ProductCard product={item} canOrder={shopStatus.is_online} />
               </div>
             ))}
           </div>

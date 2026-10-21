@@ -785,8 +785,14 @@ async def delete_menu_item(item_id: str, admin: dict = Depends(get_current_admin
 
 # ===================== ORDER ENDPOINTS =====================
 
+async def ensure_shop_online():
+    location = await db.van_location.find_one({}, {"_id": 0, "is_online": 1})
+    if not (location or {}).get("is_online", False):
+        raise HTTPException(status_code=403, detail="We're currently offline. Ordering opens when we're online.")
+
 @api_router.post("/orders", response_model=Order)
 async def create_order(order_data: OrderCreate):
+    await ensure_shop_online()
     # Get zone info if provided
     zone_name = None
     if order_data.zone_id:
@@ -1392,6 +1398,7 @@ async def get_stripe_config():
 @api_router.post("/stripe/create-checkout")
 async def create_stripe_checkout(data: StripeCheckoutRequest):
     """Create a Stripe checkout session"""
+    await ensure_shop_online()
     if not STRIPE_SECRET_KEY:
         raise HTTPException(status_code=500, detail="Stripe not configured")
     
