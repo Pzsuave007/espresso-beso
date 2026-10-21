@@ -39,9 +39,9 @@ export default function HomePage() {
     : [];
 
   const basePackages = [
-    { id: 'visit', name: 'Coffee Visit', price: 7, unit: '/drink', guests: '5-10 drinks', duration: '1 hour', desc: 'Quick artisanal pop-up for small team gatherings.', features: ['Fresh handcrafted espresso', 'Full barista service', 'Dairy & Oat milk included'], popular: false, badge: 'Flexible' },
-    { id: 'small', name: 'Small Event', price: 300, unit: 'flat', guests: '11-25 people', duration: '2 hours', desc: 'Unlimited craft coffee for intimate celebrations.', features: ['Unlimited drinks', 'Full mobile bar setup', 'House-made syrups', 'Matcha & Chai options'], popular: true, badge: 'Most Popular' },
-    { id: 'medium', name: 'Medium Event', price: 500, unit: 'flat', guests: '25-50 people', duration: '3 hours', desc: 'Ultimate espresso bar for medium gatherings.', features: ['Unlimited custom drinks', 'High-capacity service', 'Custom event branding option', 'Cold brews & seasonal specials'], popular: false, badge: 'Best Value' },
+    { id: 'visit', name: 'Coffee Visit', price: 7, unit: '/drink', guests: '5-10 drinks', duration: '1 hour', desc: 'Quick artisanal pop-up for small team gatherings.', features: ['Fresh handcrafted espresso', 'Full barista service', 'Dairy & Oat milk included', 'Cold brews & seasonal specials'], popular: false, badge: 'Flexible' },
+    { id: 'small', name: 'Small Event', price: 300, unit: 'flat', guests: '11-25 people', duration: '2 hours', desc: 'Unlimited craft coffee for intimate celebrations.', features: ['Unlimited drinks', 'Full mobile bar setup', 'Flavored syrups', 'Matcha upon request', 'Cold brews & seasonal specials'], popular: true, badge: 'Most Popular' },
+    { id: 'medium', name: 'Medium Event', price: 500, unit: 'flat', guests: '25-50 people', duration: '3 hours', desc: 'Ultimate espresso bar for medium gatherings.', features: ['Unlimited custom drinks', 'High-capacity service', 'Cold brews & seasonal specials'], popular: false, badge: 'Best Value' },
   ];
 
   const packages = basePackages
