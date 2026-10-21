@@ -1565,8 +1565,8 @@ DEFAULT_EVENT_SETTINGS = {
         "other": {"enabled": True, "name": "Other Events", "icon": "calendar", "description": "Any special occasion"}
     },
     "packages": {
-        "visit": {"name": "Coffee Visit", "people_range": "5-8 drinks", "price": 7, "price_type": "per_drink", "enabled": True, "description": "Perfect for small offices or quick visits. Pay per drink.", "duration": "1 hour"},
-        "small": {"name": "Small Event", "people_range": "10-25 guests", "price": 300, "price_type": "flat", "enabled": True, "description": "Unlimited drinks for intimate gatherings and small celebrations.", "duration": "2 hours"},
+        "visit": {"name": "Coffee Visit", "people_range": "5-10 drinks", "price": 7, "price_type": "per_drink", "enabled": True, "description": "Perfect for small offices or quick visits. Pay per drink.", "duration": "1 hour"},
+        "small": {"name": "Small Event", "people_range": "11-25 guests", "price": 300, "price_type": "flat", "enabled": True, "description": "Unlimited drinks for intimate gatherings and small celebrations.", "duration": "2 hours"},
         "medium": {"name": "Medium Event", "people_range": "25-50 guests", "price": 500, "price_type": "flat", "enabled": True, "description": "Unlimited drinks for larger corporate events and parties.", "duration": "3 hours"}
     }
 }
@@ -2107,6 +2107,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def migrate_event_package_ranges():
+    await db.event_settings.update_one({"packages.visit.people_range": "5-8 drinks"}, {"$set": {"packages.visit.people_range": "5-10 drinks"}})
+    await db.event_settings.update_one({"packages.small.people_range": "10-25 guests"}, {"$set": {"packages.small.people_range": "11-25 guests"}})
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

@@ -221,7 +221,7 @@ export default function LivePage() {
           </div>
         )}
         
-        <div className="h-[400px] md:h-[450px]">
+        <div className="h-[400px] md:h-[450px] relative z-0 isolate">
           <LiveMap className="h-full" />
         </div>
 

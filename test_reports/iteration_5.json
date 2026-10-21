@@ -1,0 +1,42 @@
+{
+  "summary": "Frontend-only test of the new /live page, the nav links and the homepage fixes, on desktop 1920x1080 and mobile 390x844. Almost all requested items PASS. One HIGH visual bug: when scrolling /live, the Leaflet map paints over the sticky header on both desktop and mobile, hiding the logo, nav links, cart and hamburger. A minor beige strip (~23px) still shows under the mobile footer.",
+  "passed": [
+    "/live: live-page renders, h1 'Live Location'. live-status-online is shown and matches GET /api/van-location is_online=true. No page errors.",
+    "Leaflet map renders (tiles load). map-location-status 'Live location not shared yet' shows (van status=offline) and does NOT overlap the zoom controls (status x=408, zoom ends at x=396 on desktop; mobile 72 vs 60).",
+    "check-nearby-btn is present (mode=mobile). Clicking it with geolocation denied shows 'Location access denied...' with Try Again and Request a Visit. Try Again restores the button.",
+    "How It Works and Today's Service Areas render (1 schedule-zone card).",
+    "live-view-menu-link -> /menu, live-request-visit-link -> /group-request",
+    "Links to /live work: nav-live (desktop), mobile-nav-live (hamburger), bottom-nav-live (shows active on /live), secondary-street-location-link ('See Live Map'), footer-live-link. The bottom nav has 5 items: home/live/menu/cart/groups.",
+    "Calculator: 5->$35, 8->$56, 9/25->Small $300, 26/50->Medium $500, 51/60->'Custom Quote (50+ guests)' / 'Contact us'",
+    "footer-logo loads on a cream pill (rgb 245,240,225) and is visible. how-it-works-book-button is 358px (full width) on mobile. No horizontal overflow on mobile (scrollWidth 390) on / or /live. Footer content sits above the bottom nav.",
+    "Regression: hero-quote-calc-button -> #calculator, calculator-submit -> /book-event"
+  ],
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "LiveMap on /live (desktop + mobile)", "issue": "When the page scrolls, the map renders ON TOP of the sticky header. The logo, nav links, cart and hamburger are visually covered. RCA: the header is z-40 (App.css .header), while Leaflet panes/controls use z-index 400-1000 and the map wrapper creates no stacking context. Fix: add 'relative z-0 isolate' (isolation: isolate) to the map wrapper div in LivePage.jsx (h-[400px]) or to the LiveMap root, or raise the header z-index above 1000.", "selector": ".leaflet-container / [data-testid=header]", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Mobile homepage bottom", "issues": ["A beige strip of ~23px is still visible between the footer bottom (y=748) and the bottom nav top (y=771) when scrolled to the end. The page has ~96px of padding below the footer; make that area dark, or put the padding inside the footer."]},
+      {"screen": "Calculator >50 guests", "issues": ["The CTA still reads 'Book This Package' when showing Custom Quote / Contact us. Consider 'Request Custom Quote'."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "HIGH: Isolate the Leaflet map stacking context (e.g. className='relative z-0 isolate' on the map wrapper) so it no longer covers the sticky header on scroll",
+    "Minor: remove the remaining ~23px beige strip under the mobile footer",
+    "Optional: change the calculator CTA text for >50 guests"
+  ],
+  "critical_code_review_comments": [
+    "LivePage: isOnline comes from the shopStatus context, while the van GPS 'status' is separate. The hero says 'We're Online Now' / 'out on the street' even though the map says 'Live location not shared yet'. This is a bit contradictory for users. Consider wording that reflects the GPS status.",
+    "LivePage checkIfNearby uses the van lat/lng even when van.status is offline (the stale GPS seen here), so the distance may be computed against an old location.",
+    "Link wrapping Button (<a><button>) is still used; prefer Button asChild."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "90%"},
+  "seed_data_creation": "none; admin settings and van location not modified",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The van-location currently has is_online=true, status=offline, mode=mobile. To verify the map/header fix, scroll /live so the map sits under the header (scrollTo map top - 20 on 390x844) and take a screenshot. elementFromPoint returns the header even though the map paints over it, so verify visually."
+}

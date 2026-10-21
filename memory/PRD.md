@@ -220,3 +220,16 @@ Build a modern web platform for "Espresso Beso" - a mobile espresso coffee servi
 ## Test Credentials
 - Admin: Register at /admin/login
 - Test account: modetest@test.com / test123
+
+## Update — June 2026
+- Homepage redesigned (events/catering focus); package prices now load live from /api/event-settings (admin-editable).
+- Instant Quote ranges: 5-10 Coffee Visit ($/drink x guests), 11-25 Small Event, 26-50 Medium Event, 50+ Custom Quote.
+- Coffee Visit = "5-10 drinks", Small = "11-25 guests" (defaults + startup migration in server.py).
+- New /live page (LivePage.jsx): live map, online/offline status, nearby check, how it works, today's zones. Links: header, mobile menu, bottom nav "Live", homepage banner, footer.
+- Fixes: map no longer covers sticky header, footer logo on light pill, no mobile strip under footer.
+- Tested: iteration_4 (homepage pass), iteration_5 (/live pass, map z-index fixed after), self-tested calculator ranges.
+
+## Backlog
+- P1: QR codes linking to menu/ordering
+- P2: Out-of-stock toggle in menu manager
+- Future: customer accounts, CSV export, customer notes, FAQ/testimonials

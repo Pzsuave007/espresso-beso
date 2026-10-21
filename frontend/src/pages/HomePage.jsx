@@ -28,8 +28,8 @@ export default function HomePage() {
   ];
 
   const basePackages = [
-    { id: 'visit', name: 'Coffee Visit', price: 7, unit: '/drink', guests: '5-8 drinks', duration: '1 hour', desc: 'Quick artisanal pop-up for small team gatherings.', features: ['Fresh handcrafted espresso', 'Full barista service', 'Dairy & Oat milk included'], popular: false, badge: 'Flexible' },
-    { id: 'small', name: 'Small Event', price: 300, unit: 'flat', guests: '10-25 people', duration: '2 hours', desc: 'Unlimited craft coffee for intimate celebrations.', features: ['Unlimited drinks', 'Full mobile bar setup', 'House-made syrups', 'Matcha & Chai options'], popular: true, badge: 'Most Popular' },
+    { id: 'visit', name: 'Coffee Visit', price: 7, unit: '/drink', guests: '5-10 drinks', duration: '1 hour', desc: 'Quick artisanal pop-up for small team gatherings.', features: ['Fresh handcrafted espresso', 'Full barista service', 'Dairy & Oat milk included'], popular: false, badge: 'Flexible' },
+    { id: 'small', name: 'Small Event', price: 300, unit: 'flat', guests: '11-25 people', duration: '2 hours', desc: 'Unlimited craft coffee for intimate celebrations.', features: ['Unlimited drinks', 'Full mobile bar setup', 'House-made syrups', 'Matcha & Chai options'], popular: true, badge: 'Most Popular' },
     { id: 'medium', name: 'Medium Event', price: 500, unit: 'flat', guests: '25-50 people', duration: '3 hours', desc: 'Ultimate espresso bar for medium gatherings.', features: ['Unlimited custom drinks', 'High-capacity service', 'Custom event branding option', 'Cold brews & seasonal specials'], popular: false, badge: 'Best Value' },
   ];
 
@@ -46,7 +46,7 @@ export default function HomePage() {
     const visit = findPkg('visit');
     const small = findPkg('small');
     const medium = findPkg('medium');
-    if (guestCount <= 8 && visit) return { name: visit.name, price: guestCount * visit.price, unit: 'estimated' };
+    if (guestCount <= 10 && visit) return { name: visit.name, price: guestCount * visit.price, unit: 'estimated' };
     if (guestCount <= 25 && small) return { name: small.name, price: small.price, unit: 'flat rate' };
     if (guestCount > 50) return null;
     const fallback = medium || small || visit;
@@ -157,7 +157,7 @@ export default function HomePage() {
                   className="w-full bg-[#D4AF37] hover:bg-[#B8960F] text-[#1A1A1A] rounded-full py-6 font-semibold"
                   data-testid="calculator-submit-quote-button"
                 >
-                  Book This Package
+                  {estimatedPackage ? 'Book This Package' : 'Request Custom Quote'}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
@@ -379,7 +379,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1A1A1A] pt-12 pb-28 md:pb-12">
+      <footer className="bg-[#1A1A1A] pt-12 pb-36 -mb-24 md:pb-20 md:-mb-8">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
